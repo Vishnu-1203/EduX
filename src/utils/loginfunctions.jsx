@@ -34,7 +34,9 @@ export const googleLogin = async (navigation, setError) => {
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
     const signInResult = await GoogleSignin.signIn();
 
-    const idToken = signInResult.idToken;
+   const idToken = signInResult.data.idToken;
+    console.log('Google SignIn Result:', signInResult);
+
     if (!idToken) {
       throw new Error("No ID token found");
     }

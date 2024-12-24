@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { View, Text, Button, TextInput, StyleSheet, TouchableOpacity } from "react-native";
 import { handleLogin, googleLogin } from "../utils/loginfunctions";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+GoogleSignin.configure({
+  webClientId: "513657717163-p3tqd6cpreqmrcd19u6h13cfdma7n4dv.apps.googleusercontent.com",
+});
 
 const Login = ({ navigation }) => {
   const [username, setUsername] = useState("");
