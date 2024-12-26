@@ -7,7 +7,7 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.container}>
             <View style={{marginTop:"10%"}}></View>
             <Button title="login" onPress={()=>navigation.navigate("Login")}/>
-            <Text style={styles.heading}>Heyyy!  You are in the HomePage</Text>
+            <Text style={styles.heading}>Heyyy Bro!  You are in the HomePage</Text>
         </View>
     );
 }
