@@ -1,8 +1,9 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import { View, Text,Button,StyleSheet } from "react-native";
 
 export default function HomeScreen({ navigation }) {
     console.log("homescreen being called")
+
     return (
         <View style={styles.container}>
             <View style={{marginTop:"10%"}}></View>
