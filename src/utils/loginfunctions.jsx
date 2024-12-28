@@ -1,7 +1,7 @@
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-
+import AsyncStorage from "@react-native-async-storage/async-storage"
 GoogleSignin.configure({
   webClientId: "513657717163-p3tqd6cpreqmrcd19u6h13cfdma7n4dv.apps.googleusercontent.com",
 });
@@ -51,3 +51,15 @@ export const googleLogin = async (navigation, setError) => {
     console.log("Google Login Error:", err);
   }
 };
+
+export const handleLogout=async(navigation)=>{
+    try{
+        await auth().signOut();
+        console.log("signing out");
+        navigation.navigate("Home")
+        }catch(err){
+            console.log("Error logging out:",err)
+
+            }
+
+    }

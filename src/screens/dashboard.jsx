@@ -3,6 +3,7 @@ import {View,Text,Button,StyleSheet,TouchableOpacity} from "react-native"
 import Profile from "./dashboardComponents/profile"
 import Courses from "./dashboardComponents/courses"
 import Settings from "./dashboardComponents/settings"
+import {handleLogout} from "../utils/loginfunctions"
 
 export default function Dashboard({navigation}){
     const [component,setComponent]=useState(<Profile/>)
@@ -10,7 +11,7 @@ export default function Dashboard({navigation}){
     return (<View style={{flex:1}}><View style={styles.container}>
         <Text>Dashboard</Text>
 
-        <Button title="Homepage" onPress={()=>{navigation.navigate("Home");}}/>
+        <Button title="Log Out" onPress={()=>{handleLogout(navigation)}}/>
         {component}
         </View>
         <View style={styles.bottomNavbar}>
