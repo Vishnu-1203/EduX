@@ -9,15 +9,15 @@ export default function Dashboard({navigation}){
     const [component,setComponent]=useState(<Profile/>)
 
     return (<View style={{flex:1}}><View style={styles.container}>
-        <Text>Dashboard</Text>
+        <Text style={{fontSize:25,alignSelf:"center"}}>Dashboard</Text>
 
         <Button title="Log Out" onPress={()=>{handleLogout(navigation)}}/>
         {component}
         </View>
         <View style={styles.bottomNavbar}>
-            <TouchableOpacity onPress={()=>{setComponent(<Courses/>)}}><Text>Courses</Text></TouchableOpacity>
-            <TouchableOpacity onPress={()=>{setComponent(<Profile/>)}}><Text>Profile</Text></TouchableOpacity>
-            <TouchableOpacity onPress={()=>{setComponent(<Settings/>)}}><Text>Settings</Text></TouchableOpacity>
+            <TouchableOpacity onPress={()=>{setComponent(<Courses navigation={navigation}/>)}}><Text>Courses</Text></TouchableOpacity>
+            <TouchableOpacity onPress={()=>{setComponent(<Profile navigation={navigation}/>)}}><Text>Profile</Text></TouchableOpacity>
+            <TouchableOpacity onPress={()=>{setComponent(<Settings navigation={navigation}/>)}}><Text>Settings</Text></TouchableOpacity>
 
         </View >
         </View>
