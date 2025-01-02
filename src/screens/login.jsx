@@ -18,7 +18,7 @@ const Login = ({ navigation }) => {
         <Text style={styles.backButtonText}>{"<"}</Text>
       </TouchableOpacity>
       <View style={styles.loginBox}>
-        <Text style={styles.loginTitle}>L O G I N</Text>
+        <Text style={styles.loginTitle}>LOGIN</Text>
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
         <TextInput
           placeholder="Enter email"
@@ -39,6 +39,9 @@ const Login = ({ navigation }) => {
         >
           <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
+          <Text style={styles.signupButtonText}>Sign Up</Text>
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => googleLogin(navigation, setError)}>
           <Text style={styles.googleSignInText}>Google Sign-In</Text>
         </TouchableOpacity>
@@ -56,18 +59,18 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    top: 30,
+    top: 40,
     left: 20,
-    width: 50,
-    height: 50,
-    borderRadius: 30,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: "black",
     justifyContent: "center",
     alignItems: "center",
   },
   backButtonText: {
-    fontSize: 30,
+    fontSize: 18,
     color: "black",
   },
   loginBox: {
@@ -115,8 +118,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+  signupButtonText: {
+    color: "blue",
+    textDecorationLine: "underline",
+    marginTop: 10,
+    fontSize: 16,
+  },
   googleSignInText: {
-    color: "red",
+    color: "blue",
     textDecorationLine: "underline",
     marginTop: 10,
   },
