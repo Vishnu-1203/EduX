@@ -1,7 +1,6 @@
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import AsyncStorage from "@react-native-async-storage/async-storage"
 GoogleSignin.configure({
   webClientId: "513657717163-p3tqd6cpreqmrcd19u6h13cfdma7n4dv.apps.googleusercontent.com",
 });
