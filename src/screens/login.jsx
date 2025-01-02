@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Button, TextInput, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, Button, TextInput, StyleSheet, TouchableOpacity,Image } from "react-native";
 import { handleLogin, googleLogin } from "../utils/loginfunctions";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 GoogleSignin.configure({
@@ -39,10 +39,14 @@ const Login = ({ navigation }) => {
       </View>
       <Button title="Sign Up" onPress={() => navigation.navigate("Signup")} />
       <TouchableOpacity
-        style={{ marginTop: "10%" }}
+        style={({pressed})=>[{opacity:pressed?0.5:1}]}
         onPress={() => googleLogin(navigation, setError)}
       >
-        <Text>Google Sign-In</Text>
+         <Image
+          source={require("../assets/dashboard/google-login.png")} // Replace with your image URL or local path
+          style={{width: 200,  // Adjust size
+            height: 50}}
+        />
       </TouchableOpacity>
     </View>
   );
