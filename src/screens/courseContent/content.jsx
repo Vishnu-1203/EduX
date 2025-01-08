@@ -1,24 +1,33 @@
 import React from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, StyleSheet } from "react-native";
 
-const CourseContent = ({ route }) => {
-    const data = route.params.courseData.contents; // The data passed from navigation
+const CourseContent = ({ route, navigation }) => {
+    const { courseData } = route.params; // Accessing 'courseData' from params
+    const { chapters } = courseData.contents; // Extracting 'chapters' from 'contents'
 
-    console.log(data); // Debugging: Ensure data structure is correct
+    console.log(chapters); // Debugging: Ensure data structure is correct
 
+    // Render each chapter title
     const renderItem = ({ item }) => (
-        <View style={styles.card}>
-            <Text style={styles.heading}>{`Section ${item.id}`}</Text>
+        <TouchableOpacity
+            style={styles.card}
+            onPress={() =>
+                navigation.navigate("cardsPage", {
+                    chapterTitle: item.title,
+                    chapterContent: item.content, // Passing the content of the chapter
+                })
+            }
+        >
             <Text style={styles.title}>{item.title}</Text>
-        </View>
+        </TouchableOpacity>
     );
 
     return (
         <View style={styles.container}>
             <FlatList
-                data={data}
+                data={chapters} // Rendering chapters
                 renderItem={renderItem}
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={(item) => item.id ? item.id.toString() : item.title} // Ensure key is unique
             />
         </View>
     );
@@ -37,20 +46,10 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         elevation: 3,
     },
-    heading: {
-        fontSize: 14,
-        fontWeight: "bold",
-        color: "#888",
-        marginBottom: 4,
-    },
     title: {
         fontSize: 18,
         fontWeight: "bold",
-        marginBottom: 8,
-    },
-    description: {
-        fontSize: 14,
-        color: "#555",
+        color: "#333",
     },
 });
 
