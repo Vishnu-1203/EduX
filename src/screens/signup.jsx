@@ -38,19 +38,19 @@ export default function SignUp({ navigation }) {
       <View style={styles.signupBox}>
         <Text style={styles.signupTitle}>SIGN UP</Text>
         <TextInput
-          placeholder="Enter Username"
+          placeholder="Username"
           style={styles.input}
           onChangeText={setUsername}
           value={username}
         />
         <TextInput
-          placeholder="Enter Email"
+          placeholder="Email"
           style={styles.input}
           onChangeText={setEmail}
           value={email}
         />
         <TextInput
-          placeholder="Enter Password"
+          placeholder="Password"
           style={styles.input}
           onChangeText={setPassword}
           value={password}
@@ -60,7 +60,7 @@ export default function SignUp({ navigation }) {
           style={styles.signupButton}
           onPress={() => handleSignUp(username, email, password)}
         >
-          <Text style={styles.signupButtonText}>Sign Up!</Text>
+          <Text style={styles.signupButtonText}>SIGN UP</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -74,20 +74,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  backButton: {
+backButton: {
     position: "absolute",
-    top: 40,
-    left: 20,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    top: 20,
+    left: 10,
+    width: 50,
+    height: 50,
+    borderRadius: 30,
     borderWidth: 1,
     borderColor: "black",
     justifyContent: "center",
     alignItems: "center",
   },
   backButtonText: {
-    fontSize: 18,
+    fontSize: 30,
     color: "black",
   },
   signupBox: {
@@ -120,13 +120,13 @@ const styles = StyleSheet.create({
   signupButton: {
     width: "100%",
     height: 50,
-    backgroundColor: "black",
+    backgroundColor: "#1DFF80",
     borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
   },
   signupButtonText: {
-    color: "white",
+    color: "black",
     fontSize: 16,
     fontWeight: "bold",
   },

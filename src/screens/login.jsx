@@ -21,13 +21,13 @@ const Login = ({ navigation }) => {
         <Text style={styles.loginTitle}>LOGIN</Text>
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
         <TextInput
-          placeholder="Enter email"
+          placeholder="Email"
           style={styles.input}
           onChangeText={setUsername}
           value={username}
         />
         <TextInput
-          placeholder="Enter password"
+          placeholder="Password"
           style={styles.input}
           onChangeText={setPass}
           value={pass}
@@ -37,7 +37,7 @@ const Login = ({ navigation }) => {
           style={styles.loginButton}
           onPress={() => handleLogin(username, pass, navigation, setError)}
         >
-          <Text style={styles.loginButtonText}>Login</Text>
+          <Text style={styles.loginButtonText}>LOGIN</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
           <Text style={styles.signupButtonText}>Sign Up</Text>
@@ -59,18 +59,18 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    top: 40,
-    left: 20,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    top: 20,
+    left: 10,
+    width: 50,
+    height: 50,
+    borderRadius: 30,
     borderWidth: 1,
     borderColor: "black",
     justifyContent: "center",
     alignItems: "center",
   },
   backButtonText: {
-    fontSize: 18,
+    fontSize: 30,
     color: "black",
   },
   loginBox: {
@@ -107,14 +107,14 @@ const styles = StyleSheet.create({
   loginButton: {
     width: "100%",
     height: 50,
-    backgroundColor: "black",
+    backgroundColor: "#1DFF80",
     borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 10,
   },
   loginButtonText: {
-    color: "white",
+    color: "black",
     fontSize: 16,
     fontWeight: "bold",
   },

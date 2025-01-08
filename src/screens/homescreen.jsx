@@ -1,28 +1,41 @@
-import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import auth from "@react-native-firebase/auth";
+import React, { useRef } from "react";
+import { Animated, View, Text, TouchableWithoutFeedback, StyleSheet } from "react-native";
 
 export default function HomeScreen({ navigation }) {
-    console.log("homescreen being called");
-    const user = auth().currentUser;
+    const scale = useRef(new Animated.Value(1)).current;
 
-    if (user) {
-        const idToken = auth().currentUser.getIdToken(true);
-        console.log("id Token", idToken);
-        navigation.navigate("Dashboard");
-    }
+    const handlePressIn = () => {
+        Animated.spring(scale, {
+            toValue: 0.95,
+            useNativeDriver: true,
+        }).start();
+    };
+
+    const handlePressOut = () => {
+        Animated.spring(scale, {
+            toValue: 1,
+            useNativeDriver: true,
+        }).start(() => {
+            navigation.navigate("Login");
+        });
+    };
 
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.title}>E D U C H A I N</Text>
-                <Text style={styles.subtitle}>Learn and Earn NFTs</Text>
+                <Text style={styles.subtitle}>Learn and Earn</Text>
             </View>
 
             <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate("Login")}>
-                    <Text style={styles.loginButtonText}>Login</Text>
-                </TouchableOpacity>
+                <TouchableWithoutFeedback
+                    onPressIn={handlePressIn}
+                    onPressOut={handlePressOut}
+                >
+                    <Animated.View style={[styles.customButton, { transform: [{ scale }] }]}>
+                        <Text style={styles.customButtonText}>GET STARTED</Text>
+                    </Animated.View>
+                </TouchableWithoutFeedback>
             </View>
         </View>
     );
@@ -41,29 +54,35 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     title: {
-        fontSize: 40,
+        fontSize: 50,
         fontWeight: "bold",
-        color: "#333",
+        color: "black",
     },
     subtitle: {
-        fontSize: 18,
-        color: "#555",
+        fontSize: 22,
+        color: "#A5A5A5",
         textAlign: "center",
         marginVertical: 10,
+
     },
     buttonContainer: {
-        width: "100%",
-        alignItems: "center",
-    },
-    loginButton: {
         width: "80%",
-        padding: 15,
-        backgroundColor: "#007BFF",
+        marginTop: 20,
+    },
+    customButton: {
+        width: "100%",
+        paddingVertical: 15,
+        backgroundColor: "#1DFF80",
         borderRadius: 25,
         alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 5,
+        elevation: 5,
     },
-    loginButtonText: {
-        color: "white",
+    customButtonText: {
+        color: "black",
         fontSize: 18,
         fontWeight: "bold",
     },
