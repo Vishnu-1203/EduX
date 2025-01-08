@@ -8,6 +8,7 @@ import Login from "../screens/login";
 import SignUp from "../screens/signup"
 import Dashboard from "../screens/dashboard"
 import Course1 from "../screens/courseContent/course1"
+import CourseContent from "../screens/courseContent/content"
 
 const Stack = createStackNavigator();
 
@@ -23,6 +24,8 @@ export default function Navigation() {
                 <Stack.Screen name ="Signup" component={SignUp}/>
                 <Stack.Screen name="Dashboard" component={Dashboard}/>
                 <Stack.Screen name="Course1" component={Course1}/>
+                <Stack.Screen name="CourseContent" component={CourseContent} />
+
             </Stack.Navigator>
         </NavigationContainer>
     );
