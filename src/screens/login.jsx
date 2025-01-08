@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Text, Button, TextInput, StyleSheet, TouchableOpacity,Image } from "react-native";
 import { handleLogin, googleLogin } from "../utils/loginfunctions";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
+
 GoogleSignin.configure({
   webClientId: "513657717163-p3tqd6cpreqmrcd19u6h13cfdma7n4dv.apps.googleusercontent.com",
 });
@@ -13,41 +14,38 @@ const Login = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={{ flex: 0.2, alignSelf: "center", marginTop: "10%", fontSize: 20 }}>
-        You’re in the login page
-      </Text>
-      {error ? <Text style={{ color: "red" }}>{error}</Text> : null}
-      <TextInput
-        placeholder="Enter email"
-        style={styles.input}
-        onChangeText={setUsername}
-        value={username}
-      />
-      <TextInput
-        placeholder="Enter password"
-        style={styles.input}
-        onChangeText={setPass}
-        value={pass}
-        secureTextEntry
-      />
-      <Button
-        title="Login"
-        onPress={() => handleLogin(username, pass, navigation, setError)}
-      />
-      <View style={{ marginBottom: 20, marginTop: "20%" }}>
-        <Button title="Go Back" onPress={() => navigation.goBack()} />
-      </View>
-      <Button title="Sign Up" onPress={() => navigation.navigate("Signup")} />
-      <TouchableOpacity
-        style={({pressed})=>[{opacity:pressed?0.5:1}]}
-        onPress={() => googleLogin(navigation, setError)}
-      >
-         <Image
-          source={require("../assets/dashboard/google-login.png")} // Replace with your image URL or local path
-          style={{width: 200,  // Adjust size
-            height: 50}}
-        />
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Text style={styles.backButtonText}>{"<"}</Text>
       </TouchableOpacity>
+      <View style={styles.loginBox}>
+        <Text style={styles.loginTitle}>LOGIN</Text>
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
+        <TextInput
+          placeholder="Enter email"
+          style={styles.input}
+          onChangeText={setUsername}
+          value={username}
+        />
+        <TextInput
+          placeholder="Enter password"
+          style={styles.input}
+          onChangeText={setPass}
+          value={pass}
+          secureTextEntry
+        />
+        <TouchableOpacity
+          style={styles.loginButton}
+          onPress={() => handleLogin(username, pass, navigation, setError)}
+        >
+          <Text style={styles.loginButtonText}>Login</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
+          <Text style={styles.signupButtonText}>Sign Up</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => googleLogin(navigation, setError)}>
+          <Text style={styles.googleSignInText}>Google Sign-In</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -55,24 +53,81 @@ const Login = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "white",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  backButton: {
+    position: "absolute",
+    top: 40,
+    left: 20,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "black",
+    justifyContent: "center",
     alignItems: "center",
   },
-  input: {
-    fontSize: 20,
-    alignSelf: "center",
-    backgroundColor: "grey",
-    marginBottom: 20,
-    height: 60,
-    width: 480,
-    borderColor: "black",
-    borderWidth: 5,
+  backButtonText: {
+    fontSize: 18,
+    color: "black",
   },
-  button: {
-    borderColor: "black",
-    borderWidth: 5,
-    backgroundColor: "red",
-    width: 100,
-    height: 100,
+  loginBox: {
+    width: "80%",
+    backgroundColor: "white",
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    padding: 20,
+    alignItems: "center",
+  },
+  loginTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 10,
+  },
+  input: {
+    width: "100%",
+    height: 50,
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 25,
+    paddingHorizontal: 15,
+    marginBottom: 15,
+    backgroundColor: "#f9f9f9",
+  },
+  loginButton: {
+    width: "100%",
+    height: 50,
+    backgroundColor: "black",
+    borderRadius: 25,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  loginButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  signupButtonText: {
+    color: "blue",
+    textDecorationLine: "underline",
+    marginTop: 10,
+    fontSize: 16,
+  },
+  googleSignInText: {
+    color: "blue",
+    textDecorationLine: "underline",
+    marginTop: 10,
   },
 });
 
