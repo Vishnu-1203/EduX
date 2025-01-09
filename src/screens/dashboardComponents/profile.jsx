@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, Dimensions } from "react-native";
 import auth from "@react-native-firebase/auth";
 
 export default function Profile() {
@@ -36,36 +36,40 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#f5f5f5",
+        backgroundColor: "#0E0325",
     },
     profileCard: {
-        width: "90%",
-        maxWidth: 400,
-        backgroundColor: "#fff",
-        borderRadius: 20,
-        padding: 20,
+        width: Dimensions.get("window").width,
+        maxWidth: 600,
+        backgroundColor: "#0E0325",
+        borderRadius: 60,
+        padding: 30,
         alignItems: "center",
-        shadowColor: "#000",
+        shadowColor: "#7979B2",
         shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.1,
-        shadowRadius: 15,
-        elevation: 10,
+        shadowOpacity: 10,
+        shadowRadius: 10,
+        elevation: 20,
+        borderWidth: 2,
+        borderColor: "#7979B2",
     },
     image: {
-        width: 120,
-        height: 120,
-        borderRadius: 60,
-        borderWidth: 5,
-        borderColor: "#ddd",
+        width: 160,
+        height: 160,
+        borderRadius: 80,
+        borderWidth: 2,
+        borderColor: "#7979B2",
         marginBottom: 20,
+
     },
     infoText: {
-        fontSize: 18,
-        color: "#333",
-        marginBottom: 10,
+        fontSize: 22,
+        color: "white",
+        marginBottom: 5,
+        textAlign: "center",
     },
     loadingText: {
-        fontSize: 18,
-        color: "#888",
+        fontSize: 20,
+        color: "#0E0325",
     },
 });

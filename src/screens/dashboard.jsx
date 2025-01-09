@@ -42,7 +42,7 @@ export default function Dashboard({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#0E0325',
   },
   title: {
     fontSize: 30,
@@ -58,8 +58,9 @@ const styles = StyleSheet.create({
   bottomNavbar: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    backgroundColor: '#000',
+    backgroundColor: 'rgba(121, 121, 178, 0.5)',
     paddingVertical: 15,
+    borderRadius: 30,
   },
   navItem: {
     flex: 1,
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   navText: {
-    color: '#fff',
+    color: 'white',
     fontSize: 18,
   },
 });

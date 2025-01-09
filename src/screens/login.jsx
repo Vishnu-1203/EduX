@@ -172,13 +172,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 5,
     elevation: 20,
+    borderColor: '#0E0325',
   },
   image: {
     width: '100%',
     height: 57.5,
     borderRadius: 20,
     borderWidth: 5,
-    borderColor: '#0E0325',
+
   },
 });
 
