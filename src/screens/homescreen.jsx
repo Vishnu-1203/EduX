@@ -59,11 +59,10 @@ const styles = StyleSheet.create({
         color: "black",
     },
     subtitle: {
-<<<<<<< Updated upstream
+
         fontSize: 22,
-=======
+
         fontSize: 20,
->>>>>>> Stashed changes
         color: "#A5A5A5",
         textAlign: "center",
         marginVertical: 10,
