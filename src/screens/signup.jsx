@@ -1,30 +1,39 @@
-import React, { useState } from "react";
-import { Text, View, TextInput, StyleSheet, TouchableOpacity } from "react-native";
-import auth from "@react-native-firebase/auth";
-import firestore from "@react-native-firebase/firestore";
+import React, {useState} from 'react';
+import {
+  Text,
+  View,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
-export default function SignUp({ navigation }) {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+export default function SignUp({navigation}) {
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleSignUp = async (username, email, password) => {
-    console.log("entered handleSignup");
+    console.log('entered handleSignup');
     if (!username || !password || !email) {
-      console.error("All fields are required");
+      console.error('All fields are required');
       return;
     }
     try {
-      const userCredentials = await auth().createUserWithEmailAndPassword(email, password);
+      const userCredentials = await auth().createUserWithEmailAndPassword(
+        email,
+        password,
+      );
       console.log(userCredentials);
       const uid = userCredentials.user.uid;
 
-      await firestore().collection("users").doc(uid).set({
+      await firestore().collection('users').doc(uid).set({
         username: username,
         email: email,
       });
 
-      console.log("end of handleSignUp");
+      console.log('end of handleSignUp');
     } catch (err) {
       console.log(err, "this error can't signup");
     }
@@ -32,11 +41,13 @@ export default function SignUp({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Text style={styles.backButtonText}>{"<"}</Text>
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}>
+        <Text style={styles.backButtonText}>{'<'}</Text>
       </TouchableOpacity>
       <View style={styles.signupBox}>
-        <Text style={styles.signupTitle}>S I G N  U P</Text>
+        <Text style={styles.signupTitle}>S I G N U P</Text>
         <TextInput
           placeholder="Username"
           style={styles.input}
@@ -58,9 +69,8 @@ export default function SignUp({ navigation }) {
         />
         <TouchableOpacity
           style={styles.signupButton}
-          onPress={() => handleSignUp(username, email, password)}
-        >
-          <Text style={styles.signupButtonText}>S I G N  U P</Text>
+          onPress={() => handleSignUp(username, email, password)}>
+          <Text style={styles.signupButtonText}>S I G N U P</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -70,67 +80,67 @@ export default function SignUp({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0E0325",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#0E0325',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   backButton: {
-    position: "absolute",
+    position: 'absolute',
     top: 30,
     left: 20,
     width: 40,
     height: 40,
     borderRadius: 30,
     borderWidth: 1,
-    borderColor: "lightgrey",
-    justifyContent: "center",
-    alignItems: "center",
+    borderColor: 'lightgrey',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   backButtonText: {
     fontSize: 20,
-    color: "lightgrey",
+    color: 'lightgrey',
   },
   signupBox: {
-    width: "80%",
-    backgroundColor: "#0E0325",
+    width: '80%',
+    backgroundColor: '#0E0325',
     borderRadius: 15,
-    shadowColor: "#1DFF80",
-    shadowOffset: { width: 0, height: 2 },
+    shadowColor: '#7979B2',
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 5,
     elevation: 20,
     padding: 20,
-    alignItems: "center",
+    alignItems: 'center',
     paddingTop: 40,
     paddingBottom: 40,
   },
   signupTitle: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 20,
-    color: "lightgrey",
+    color: 'lightgrey',
   },
   input: {
-    width: "100%",
+    width: '100%',
     height: 50,
     borderWidth: 1,
-    borderColor: "gray",
+    borderColor: 'gray',
     borderRadius: 15,
     paddingHorizontal: 15,
     marginBottom: 15,
-    backgroundColor: "#f9f9f9",
+    backgroundColor: '#f9f9f9',
   },
   signupButton: {
-    width: "100%",
+    width: '100%',
     height: 50,
-    backgroundColor: "#1DFF80",
+    backgroundColor: '#7979B2',
     borderRadius: 15,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   signupButtonText: {
-    color: "black",
+    color: 'black',
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
 });

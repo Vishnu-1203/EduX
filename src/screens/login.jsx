@@ -49,11 +49,20 @@ const Login = ({navigation}) => {
           onPress={() => handleLogin(username, pass, navigation, setError)}>
           <Text style={styles.loginButtonText}>L O G I N</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-          <Text style={styles.signupButtonText}>Sign Up</Text>
+        <TouchableOpacity
+          style={styles.touchsignup}
+          onPress={() => navigation.navigate('Signup')}>
+          <Text style={styles.signupButtonText}>SIGN UP</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => googleLogin(navigation, setError)}>
-          <Text style={styles.googleSignInText}>Google Sign-In</Text>
+        <TouchableOpacity
+          style={styles.touchgoogle}
+          onPress={() => googleLogin(navigation, setError)}>
+          <Image
+            source={require('../../src/assets/dashboard/googleloginbutton.png')}
+            style={styles.image}
+            resizeMode="contain"
+            aspectratio={1}
+          />
         </TouchableOpacity>
       </View>
     </View>
@@ -87,7 +96,7 @@ const styles = StyleSheet.create({
     width: '80%',
     backgroundColor: '#0E0325',
     borderRadius: 15,
-    shadowColor: '#1DFF80',
+    shadowColor: '#7979B2',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 5,
@@ -120,7 +129,7 @@ const styles = StyleSheet.create({
   loginButton: {
     width: '100%',
     height: 50,
-    backgroundColor: '#1DFF80',
+    backgroundColor: '#7979B2',
     borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
@@ -132,6 +141,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   signupButtonText: {
+    letterSpacing: 4.5,
     color: 'lightgrey',
     marginTop: 10,
     fontSize: 16,
@@ -140,6 +150,35 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'lightgrey',
     marginTop: 10,
+  },
+  touchsignup: {
+    width: '100%',
+    height: 45,
+    backgroundColor: '#0E0325',
+    borderWidth: 2,
+    borderColor: '#7979B2',
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+    paddingBottom: 10,
+  },
+  touchgoogle: {
+    marginTop: '8.5%',
+    width: '100%',
+    height: 45,
+    shadowColor: '#7979B2',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 20,
+  },
+  image: {
+    width: '100%',
+    height: 57.5,
+    borderRadius: 20,
+    borderWidth: 5,
+    borderColor: '#0E0325',
   },
 });
 
