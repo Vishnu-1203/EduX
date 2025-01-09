@@ -3,10 +3,8 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-nati
 import { useNavigation } from '@react-navigation/native'; // Import the useNavigation hook
 
 const CardsPage = ({ route }) => {
-    const { chapterTitle, chapterContent } = route.params; // Get chapter data passed from CourseContent
+    const { chapterTitle, chapterContent, fullData, chapterIndex } = route.params; // Get the chapter data and index passed from CourseContent
     const navigation = useNavigation(); // Get the navigation object
-
-    // State to track the current card index
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
 
     // Function to move to the next card
@@ -24,6 +22,9 @@ const CardsPage = ({ route }) => {
             setCurrentCardIndex(currentCardIndex - 1); // Decrement index to show previous card
         }
     };
+
+    // Access the quiz for the current chapter using the passed chapterIndex
+    const currentQuiz = fullData.chapters[chapterIndex]?.quiz;
 
     return (
         <View style={styles.container}>
@@ -48,9 +49,9 @@ const CardsPage = ({ route }) => {
                 <TouchableOpacity
                     style={styles.button}
                     onPress={() => {
-                        // If it's the last card, go back to the Chapters page
+                        // If it's the last card, go to the quiz for the current chapter
                         if (currentCardIndex === chapterContent.length - 1) {
-                            navigation.goBack(); // Navigate back to the previous screen (Chapters)
+                            navigation.navigate("QuizPage", { questions: currentQuiz?.questions });
                         } else {
                             nextCard(); // Otherwise, move to the next card
                         }

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Text, Button, StyleSheet } from "react-native";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AboutCourse = ({ route, navigation }) => {
   const [isJoining, setIsJoining] = useState(false); // State for join button
@@ -71,6 +72,8 @@ console.log("Joined courses:", userData.joinedCourses);
       const courseData = await fetchCourseDetails();
       if (courseData) {
         // Navigate to the course content page
+        await AsyncStorage.setItem("UI/UX",JSON.stringify(courseData))
+
         navigation.navigate("CourseContent", { courseData });
       }
     } catch (error) {
