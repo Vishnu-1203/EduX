@@ -10,6 +10,7 @@ import Dashboard from "../screens/dashboard"
 import Course1 from "../screens/courseContent/course1"
 import CourseContent from "../screens/courseContent/content"
 import CardsPage from "../screens/courseContent/cardsPage";
+import QuizPage from "../screens/courseContent/quiz";
 
 const Stack = createStackNavigator();
 
@@ -27,6 +28,7 @@ export default function Navigation() {
                 <Stack.Screen name="Course1" component={Course1}/>
                 <Stack.Screen name="CourseContent" component={CourseContent} />
                 <Stack.Screen name="cardsPage" component={CardsPage} />
+                <Stack.Screen name="QuizPage" component={QuizPage} />
 
             </Stack.Navigator>
         </NavigationContainer>
