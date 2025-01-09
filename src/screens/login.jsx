@@ -18,7 +18,7 @@ const Login = ({ navigation }) => {
         <Text style={styles.backButtonText}>{"<"}</Text>
       </TouchableOpacity>
       <View style={styles.loginBox}>
-        <Text style={styles.loginTitle}>LOGIN</Text>
+        <Text style={styles.loginTitle}>L O G I N</Text>
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
         <TextInput
           placeholder="Email"
@@ -120,13 +120,13 @@ const styles = StyleSheet.create({
   },
   signupButtonText: {
     color: "blue",
-    textDecorationLine: "underline",
+     textDecorationLine: "underline",
     marginTop: 10,
     fontSize: 16,
   },
   googleSignInText: {
     color: "blue",
-    textDecorationLine: "underline",
+     textDecorationLine: "underline",
     marginTop: 10,
   },
 });
