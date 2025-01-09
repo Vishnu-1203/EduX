@@ -1,8 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Button, StyleSheet } from "react-native";
 
 const CourseContent = ({ route, navigation }) => {
+    console.log("its in contents paaaage?");
     const [courseData, setCourseData] = useState(null); // State for course data
     const [loading, setLoading] = useState(true); // Loading state
 
@@ -30,7 +31,7 @@ const CourseContent = ({ route, navigation }) => {
     if (loading) {
         return (
             <View style={styles.container}>
-                <Text>Loading...</Text>
+                <Text style={styles.loadingText}>Loading...</Text>
             </View>
         );
     }
@@ -39,7 +40,7 @@ const CourseContent = ({ route, navigation }) => {
     if (!courseData) {
         return (
             <View style={styles.container}>
-                <Text>No course data available.</Text>
+                <Text style={styles.noDataText}>No course data available.</Text>
             </View>
         );
     }
@@ -59,12 +60,22 @@ const CourseContent = ({ route, navigation }) => {
                 })
             }
         >
-            <Text style={styles.title}>{item.title}</Text>
+            <Text style={styles.chapterTitle}>{item.title}</Text>
         </TouchableOpacity>
     );
 
     return (
         <View style={styles.container}>
+            <Text style={styles.header}>UI/UX Course Content</Text>
+            
+            {/* Back Button */}
+            <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => navigation.navigate("Dashboard")} // Goes back to the previous screen
+            >
+                <Text style={styles.backButtonText}>Back to Courses</Text>
+            </TouchableOpacity>
+
             <FlatList
                 data={chapters} // Rendering chapters
                 renderItem={renderItem}
@@ -78,19 +89,52 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
-        backgroundColor: "#fff",
+        backgroundColor: "#f4f4f4", // Lighter background color for a more pleasant look
     },
-    card: {
-        backgroundColor: "#f9f9f9",
-        padding: 16,
-        marginBottom: 12,
-        borderRadius: 8,
-        elevation: 3,
-    },
-    title: {
-        fontSize: 18,
+    header: {
+        fontSize: 24,
         fontWeight: "bold",
         color: "#333",
+        marginBottom: 20,
+        textAlign: "center", // Center the heading
+    },
+    loadingText: {
+        fontSize: 18,
+        color: "#555",
+        textAlign: "center",
+    },
+    noDataText: {
+        fontSize: 18,
+        color: "#e74c3c", // Red color for error message
+        textAlign: "center",
+    },
+    card: {
+        backgroundColor: "#ffffff", // White background for each chapter card
+        padding: 16,
+        marginBottom: 12,
+        borderRadius: 10,
+        elevation: 5, // Light shadow for card elevation
+        shadowColor: "#000", // Add shadow for a floating effect
+        shadowOffset: { width: 0, height: 4 }, // Adjust shadow position
+        shadowOpacity: 0.2, // Adjust shadow opacity
+        shadowRadius: 4, // Adjust shadow spread
+    },
+    chapterTitle: {
+        fontSize: 18,
+        fontWeight: "600", // Slightly lighter weight for better readability
+        color: "#2c3e50", // Darker text color for better contrast
+    },
+    backButton: {
+        backgroundColor: "#3498db", // Blue background color
+        padding: 12,
+        borderRadius: 8,
+        marginBottom: 20,
+        alignItems: "center",
+    },
+    backButtonText: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "#fff", // White text color
     },
 });
 

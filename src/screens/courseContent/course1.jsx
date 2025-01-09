@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { View, Text, Button, StyleSheet } from "react-native";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
@@ -7,13 +7,21 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const AboutCourse = ({ route, navigation }) => {
   const [isJoining, setIsJoining] = useState(false); // State for join button
   const { courseId } = route.params; // Assume courseId is passed from navigation
-    console.log("entered course 1 file")
+    console.log("entered course 1 file",courseId)
+  
   // Fetch course details from Firestore
   const fetchCourseDetails = async () => {
     try {
       const courseDoc = await firestore().collection("courses").doc(courseId).get();
       if (courseDoc.exists) {
-        return courseDoc.data(); // Return course data
+        const courseData = courseDoc.data();
+        console.log(courseData)
+        if (courseData && courseData.contents) {
+          return courseData; // Ensure contents exists before returning
+        } else {
+          console.log("Course data does not have 'contents' field.");
+          return null;
+        }
       } else {
         console.log("No such course document!");
         return null;
@@ -23,6 +31,8 @@ const AboutCourse = ({ route, navigation }) => {
       return null;
     }
   };
+  
+  
 
   // Handle Join Course Button
   const joinCourse = async () => {
@@ -36,7 +46,6 @@ const AboutCourse = ({ route, navigation }) => {
       setIsJoining(false);
       return;
     }
-
     try {
       // Add user to "joined courses"
       const userDocRef = firestore().collection("users").doc(user.uid);
@@ -59,10 +68,8 @@ console.log("Joined courses:", userData.joinedCourses);
         const updatedCourses = userData.joinedCourses
           ? [...new Set([...userData.joinedCourses, courseId])] // Avoid duplicates
           : [courseId];
-          console.log("in else of userdocsnap beofer update",userData);
 
         await userDocRef.update({ joinedCourses: updatedCourses });
-        console.log("in else of userdocsnap",userData);
 
 
 
@@ -70,6 +77,7 @@ console.log("Joined courses:", userData.joinedCourses);
 
       // Fetch course content
       const courseData = await fetchCourseDetails();
+      console.log(courseData,"course1 paaaage")
       if (courseData) {
         // Navigate to the course content page
         await AsyncStorage.setItem("UI/UX",JSON.stringify(courseData))
