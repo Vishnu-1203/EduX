@@ -102,6 +102,11 @@ const AboutCourse = ({route, navigation}) => {
           aspectratio={1}
         />
       </TouchableOpacity>
+      <Image
+        source={require('../../../src/assets/dashboard/coursefirst.png')}
+        style={styles.coursefirst}
+        resizeMode="contain"
+      />
       <Text style={styles.title}>About the Course</Text>
       <Text style={styles.subtitle}>
         Explore the latest tools and technologies used in modern UI/UX design.
@@ -129,17 +134,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#0E0325',
   },
   title: {
-    color: '#8031A7',
+    color: 'lightgrey',
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
     textAlign: 'center',
+    marginLeft: '-52%',
   },
   subtitle: {
+    marginTop: '-3%',
     color: 'lightgrey',
-    fontSize: 16,
-    marginBottom: 24,
-    textAlign: 'center',
+    fontSize: 17.5,
+    marginBottom: '70%',
   },
   backButton: {
     position: 'absolute',
@@ -147,6 +153,10 @@ const styles = StyleSheet.create({
     left: '5%',
     width: 40,
     height: 40,
+  },
+  coursefirst: {
+    height: '23%',
+    marginBottom: 24,
   },
 });
 
