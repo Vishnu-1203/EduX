@@ -157,10 +157,10 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 45,
     shadowColor: '#7979B2',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: {width: 0, height: 10},
     shadowOpacity: 0.5,
     shadowRadius: 5,
-    elevation: 20,
+    elevation: 10,
     borderColor: '#0E0325',
   },
   image: {
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
-    top: '3.5%',
+    top: '%',
     left: '5%',
     width: 40,
     height: 40,
