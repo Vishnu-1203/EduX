@@ -12,6 +12,7 @@ export default function Settings({ navigation }) {
       console.error('Error logging out:', err);
     }
   };
+  console.log("Alita")
 
   return (
     <View style={styles.container}>
