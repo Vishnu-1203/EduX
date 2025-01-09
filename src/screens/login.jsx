@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Button, TextInput, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, Button, TextInput, StyleSheet, TouchableOpacity,Image } from "react-native";
 import { handleLogin, googleLogin } from "../utils/loginfunctions";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
