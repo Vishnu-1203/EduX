@@ -42,9 +42,11 @@ export default function HomeScreen({navigation}) {
         <TouchableWithoutFeedback
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}>
-          <Animated.View style={[styles.customButton, {transform: [{scale}]}]}>
-            <Text style={styles.customButtonText}>GET STARTED</Text>
-          </Animated.View>
+          <Image
+            source={require('../../src/assets/dashboard/buttonstarted.png')}
+            style={styles.buttonstarted}
+            resizeMode="contain"
+          />
         </TouchableWithoutFeedback>
       </View>
     </View>
@@ -59,6 +61,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   header: {
+    marginTop: 80,
     bottom: 60,
     alignItems: 'center',
     marginBottom: 20,
@@ -104,5 +107,10 @@ const styles = StyleSheet.create({
   image: {
     width: 420,
     height: 420,
+  },
+  buttonstarted: {
+    width: '85%',
+    marginLeft: 25,
+    marginTop: -160,
   },
 });
