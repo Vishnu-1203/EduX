@@ -78,7 +78,7 @@ const CourseContent = ({route, navigation}) => {
           source={require('../../../src/assets/dashboard/backbutton.png')}
           style={styles.backButton}
           resizeMode="contain"
-          aspectratio={1}
+          aspectRatio={1}
         />
       </TouchableOpacity>
       <Image

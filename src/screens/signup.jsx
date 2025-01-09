@@ -76,7 +76,7 @@ export default function SignUp({navigation}) {
         <TouchableOpacity
           style={styles.signupButton}
           onPress={() => handleSignUp(username, email, password)}>
-          <Text style={styles.signupButtonText}>S I G N U P</Text>
+          <Text style={styles.signupButtonText}>S I G N  U P</Text>
         </TouchableOpacity>
       </View>
     </View>
