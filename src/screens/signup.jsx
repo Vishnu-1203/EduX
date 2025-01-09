@@ -36,7 +36,7 @@ export default function SignUp({ navigation }) {
         <Text style={styles.backButtonText}>{"<"}</Text>
       </TouchableOpacity>
       <View style={styles.signupBox}>
-        <Text style={styles.signupTitle}>SIGN UP</Text>
+        <Text style={styles.signupTitle}>S I G N  U P</Text>
         <TextInput
           placeholder="Username"
           style={styles.input}
@@ -60,7 +60,7 @@ export default function SignUp({ navigation }) {
           style={styles.signupButton}
           onPress={() => handleSignUp(username, email, password)}
         >
-          <Text style={styles.signupButtonText}>SIGN UP</Text>
+          <Text style={styles.signupButtonText}>S I G N  U P</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -70,49 +70,52 @@ export default function SignUp({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#0E0325",
     alignItems: "center",
     justifyContent: "center",
   },
-backButton: {
+  backButton: {
     position: "absolute",
-    top: 20,
-    left: 10,
-    width: 50,
-    height: 50,
+    top: 30,
+    left: 20,
+    width: 40,
+    height: 40,
     borderRadius: 30,
     borderWidth: 1,
-    borderColor: "black",
+    borderColor: "lightgrey",
     justifyContent: "center",
     alignItems: "center",
   },
   backButtonText: {
-    fontSize: 30,
-    color: "black",
+    fontSize: 20,
+    color: "lightgrey",
   },
   signupBox: {
     width: "80%",
-    backgroundColor: "white",
-    borderRadius: 10,
-    shadowColor: "#000",
+    backgroundColor: "#0E0325",
+    borderRadius: 15,
+    shadowColor: "#1DFF80",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 20,
     padding: 20,
     alignItems: "center",
+    paddingTop: 40,
+    paddingBottom: 40,
   },
   signupTitle: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
+    color: "lightgrey",
   },
   input: {
     width: "100%",
     height: 50,
     borderWidth: 1,
     borderColor: "gray",
-    borderRadius: 25,
+    borderRadius: 15,
     paddingHorizontal: 15,
     marginBottom: 15,
     backgroundColor: "#f9f9f9",
@@ -121,7 +124,7 @@ backButton: {
     width: "100%",
     height: 50,
     backgroundColor: "#1DFF80",
-    borderRadius: 25,
+    borderRadius: 15,
     justifyContent: "center",
     alignItems: "center",
   },
