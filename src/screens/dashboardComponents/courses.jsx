@@ -28,13 +28,20 @@ export default function Courses({navigation}) {
   );
 }
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    marginTop: 100,
+  },
 
   courses: {
-    margin: '2%',
-    backgroundColor: 'grey',
-    borderRadius: 20,
-    height: 150,
+    padding: '2%',
+    margin: '1%',
+    backgroundColor: 'white',
+    borderRadius: 15,
+    height: 250,
+    width: 435,
+    borderWidth: 2,
+    boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)',
+    borderColor: 'grey',
     justifyContent: 'center',
     alignItems: 'center',
   },
