@@ -2,56 +2,50 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 const QuizPage = ({ route, navigation }) => {
-  const [quizData, setQuizData] = useState(null); // State for quiz data
-  const [loading, setLoading] = useState(false); // Loading state
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0); // Track current question
-  const [selectedOption, setSelectedOption] = useState(null); // Track selected answer
-  const [score, setScore] = useState(0); // Track the user's score
-  const [answers, setAnswers] = useState([]); // Track answers and correctness
-  const [quizFinished, setQuizFinished] = useState(false); // Track if the quiz is finished
-    
+  const [quizData, setQuizData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [score, setScore] = useState(0);
+  const [answers, setAnswers] = useState([]);
+  const [quizFinished, setQuizFinished] = useState(false);
+
   useEffect(() => {
     if (route.params && route.params.questions) {
-      setQuizData(route.params); // Directly use quiz data passed in params
+      setQuizData(route.params);
     } else {
       console.log("No quiz data received via params");
     }
-    setLoading(false); // End loading
+    setLoading(false);
   }, [route.params]);
 
-  // Show loading indicator while quizData is being processed (optional)
   if (loading) {
     return (
       <View style={styles.container}>
-        <Text>Loading quiz...</Text>
+        <Text style={styles.loadingText}>Loading quiz...</Text>
       </View>
     );
   }
 
-  // Ensure quizData is available before proceeding
   if (!quizData) {
     return (
       <View style={styles.container}>
-        <Text>No quiz data available.</Text>
+        <Text style={styles.errorText}>No quiz data available.</Text>
       </View>
     );
   }
 
-  const { questions } = quizData; // Extract quiz questions
+  const { questions } = quizData;
 
-  // Handle option selection
   const handleOptionSelect = (index) => {
     setSelectedOption(index);
   };
 
-  // Handle "Next" button press
   const handleNextQuestion = () => {
-    // Check answer and update score
     if (selectedOption === questions[currentQuestionIndex].answer) {
       setScore(score + 1);
     }
 
-    // Save the selected answer and whether it was correct
     setAnswers((prevAnswers) => [
       ...prevAnswers,
       {
@@ -62,17 +56,14 @@ const QuizPage = ({ route, navigation }) => {
       },
     ]);
 
-    // Move to the next question or end the quiz
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setSelectedOption(null); // Reset selected option for the new question
+      setSelectedOption(null);
     } else {
-      // End the quiz and trigger the results page
       setQuizFinished(true);
     }
   };
 
-  // Show results page after quiz completion
   if (quizFinished) {
     return (
       <View style={styles.container}>
@@ -82,18 +73,18 @@ const QuizPage = ({ route, navigation }) => {
         <View style={styles.resultContainer}>
           {answers.map((answer, index) => (
             <View key={index} style={styles.resultItem}>
-              <Text style={styles.resultQuestion}>{`Q${index + 1}: ${answer.question}`}</Text>
+              <Text style={styles.resultQuestion}>Q{index + 1}: {answer.question}</Text>
               <Text style={answer.isCorrect ? styles.correctAnswer : styles.incorrectAnswer}>
-                {`Your Answer: ${answer.selectedAnswer} ${answer.isCorrect ? "(Correct)" : "(Incorrect)"}`}
+                Your Answer: {answer.selectedAnswer} {answer.isCorrect ? "(Correct)" : "(Incorrect)"}
               </Text>
-              <Text style={styles.correctAnswer}>{`Correct Answer: ${answer.correctAnswer}`}</Text>
+              <Text style={styles.correctAnswer}>Correct Answer: {answer.correctAnswer}</Text>
             </View>
           ))}
         </View>
 
         <TouchableOpacity
           style={styles.nextButton}
-          onPress={() => navigation.navigate("CourseContent")} // Navigate back to the content page
+          onPress={() => navigation.navigate("CourseContent")}
         >
           <Text style={styles.nextButtonText}>Back to Content</Text>
         </TouchableOpacity>
@@ -104,7 +95,7 @@ const QuizPage = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.questionText}>
-        {`Q${currentQuestionIndex + 1}. ${questions[currentQuestionIndex].question}`}
+        Q{currentQuestionIndex + 1}. {questions[currentQuestionIndex].question}
       </Text>
 
       <View style={styles.optionsContainer}>
@@ -135,54 +126,72 @@ const QuizPage = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: "#fff",
-    justifyContent: "space-between",
+    backgroundColor: '#0E0325',
+    padding: 20,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: 'lightgrey',
+    fontSize: 18,
+    textAlign: 'center',
+  },
+  errorText: {
+    color: 'lightgrey',
+    fontSize: 18,
+    textAlign: 'center',
   },
   questionText: {
+
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 16,
-    textAlign: "center",
+    color: 'white',
   },
   optionsContainer: {
-    flex: 1,
-    justifyContent: "center",
+    width: '100%',
+    marginBottom: 20,
   },
   optionButton: {
-    backgroundColor: "#f9f9f9",
-    padding: 12,
     marginBottom: 12,
-    borderRadius: 8,
-    elevation: 2,
+        backgroundColor: '#0E0325',
+        padding: 20,
+        borderRadius: 20,
+        shadowColor: 'white',
+           shadowOffset: { width: 4, height: 10 },
+            shadowOpacity: 0.5,
+            shadowRadius: 5,
+            elevation: 5,
   },
   selectedOption: {
-    backgroundColor: "#d1e7dd", // Highlight color for selected option
-    borderColor: "#0f5132",
-    borderWidth: 1,
+    backgroundColor: '#7979B2',
+    borderColor: '#0E0325',
+    borderWidth: 2,
   },
   optionText: {
-    fontSize: 18,
-    color: "#333",
+    fontSize: 20,
+    color: '#fff',
   },
   nextButton: {
-    backgroundColor: "#4CAF50",
-    padding: 12,
-    borderRadius: 8,
-    alignItems: "center",
+    backgroundColor: '#7979B2',
+    padding: 15,
+    borderRadius: 12,
+    width: '100%',
+    alignItems: 'center',
   },
   disabledButton: {
-    backgroundColor: "#ccc",
+    backgroundColor: '#ccc',
   },
   nextButtonText: {
     fontSize: 18,
-    color: "#fff",
-    fontWeight: "bold",
+    color: '#fff',
+    fontWeight: 'bold',
   },
   resultText: {
-    fontSize: 22,
-    fontWeight: "bold",
-    textAlign: "center",
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
+    textAlign: 'center',
     marginBottom: 16,
   },
   resultContainer: {
@@ -191,17 +200,26 @@ const styles = StyleSheet.create({
   },
   resultItem: {
     marginBottom: 12,
+    backgroundColor: '#0E0325',
+    padding: 10,
+    borderRadius: 25,
+    shadowColor: 'white',
+        shadowOffset: { width: 4, height: 10 },
+        shadowOpacity: 0.5,
+        shadowRadius: 5,
+        elevation: 5,
   },
   resultQuestion: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
+    color: 'white',
   },
   correctAnswer: {
-    color: "#4CAF50",
+    color: '#4CAF50',
     fontSize: 16,
   },
   incorrectAnswer: {
-    color: "#F44336",
+    color: '#F44336',
     fontSize: 16,
   },
 });
