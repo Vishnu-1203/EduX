@@ -1,5 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, Image, Dimensions} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Dimensions,
+  TouchableOpacity,
+} from 'react-native';
 import auth from '@react-native-firebase/auth';
 
 export default function Profile() {
@@ -20,6 +27,20 @@ export default function Profile() {
           <Image source={{uri: user.image}} style={styles.image} />
           <Text style={styles.infoText}>Name: {user.name}</Text>
           <Text style={styles.infoText}>Email: {user.email}</Text>
+          <TouchableOpacity style={styles.courses}>
+            <Image
+              source={require('../../../src/assets/dashboard/yourcourses.png')}
+              style={styles.yourcourses}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.courses}>
+            <Image
+              source={require('../../../src/assets/dashboard/rewards.png')}
+              style={styles.rewards}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
         </View>
       ) : (
         <Text style={styles.loadingText}>Loading...</Text>
@@ -38,9 +59,9 @@ const styles = StyleSheet.create({
   profileCard: {
     width: Dimensions.get('window').width,
     maxWidth: 600,
+    maxHeight: 700,
     backgroundColor: '#0E0325',
     borderRadius: 60,
-    padding: 30,
     alignItems: 'center',
     shadowColor: '#7979B2',
     shadowOffset: {width: 0, height: 10},
@@ -51,6 +72,7 @@ const styles = StyleSheet.create({
     borderColor: '#7979B2',
   },
   image: {
+    marginTop: '20%',
     width: 160,
     height: 160,
     borderRadius: 80,
@@ -61,11 +83,20 @@ const styles = StyleSheet.create({
   infoText: {
     fontSize: 22,
     color: 'white',
-    marginBottom: 5,
+    marginBottom: 20,
     textAlign: 'center',
   },
   loadingText: {
+    marginTop: 20,
     fontSize: 20,
     color: '#0E0325',
+  },
+  yourcourses: {
+    height: '45%',
+    marginBottom: -95,
+  },
+  rewards: {
+    height: '45%',
+    marginTop: -95,
   },
 });
