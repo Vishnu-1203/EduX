@@ -1,5 +1,12 @@
 import React, {useState} from 'react';
-import {View, Text, Button, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  Button,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 import Profile from './dashboardComponents/profile';
 import Courses from './dashboardComponents/courses';
 import Settings from './dashboardComponents/settings';
@@ -18,21 +25,30 @@ export default function Dashboard({navigation}) {
             setComponent(<Courses navigation={navigation} />);
           }}
           style={styles.navItem}>
-          <Text style={styles.navText}>Courses</Text>
+          <Image
+            source={require('../../src/assets/dashboard/courses.png')}
+            style={styles.image}
+          />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
             setComponent(<Profile navigation={navigation} />);
           }}
           style={styles.navItem}>
-          <Text style={styles.navText}>Profile</Text>
+          <Image
+            source={require('../../src/assets/dashboard/profile.png')}
+            style={styles.image}
+          />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
             setComponent(<Settings navigation={navigation} />);
           }}
           style={styles.navItem}>
-          <Text style={styles.navText}>Settings</Text>
+          <Image
+            source={require('../../src/assets/dashboard/settings.png')}
+            style={styles.image}
+          />
         </TouchableOpacity>
       </View>
     </View>
@@ -42,7 +58,7 @@ export default function Dashboard({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#0E0325',
   },
   title: {
     fontSize: 30,
@@ -58,8 +74,22 @@ const styles = StyleSheet.create({
   bottomNavbar: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    backgroundColor: '#000',
+    backgroundColor: '#0E0325',
     paddingVertical: 15,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    borderWidth: 1,
+    borderColor: 'grey',
+    marginBottom: -2,
+    marginLeft: -2,
+    marginRight: -2,
+    shadowColor: '#7979B2',
+    shadowOffset: {width: 0, height: -20},
+    shadowOpacity: 10,
+    shadowRadius: 10,
+    elevation: 100,
+    borderWidth: 2,
+    borderColor: '#7979B2',
   },
   navItem: {
     flex: 1,
@@ -67,7 +97,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   navText: {
-    color: '#fff',
+    color: 'white',
     fontSize: 18,
+  },
+  image: {
+    width: 72,
+    height: 72,
+    color: 'white',
   },
 });

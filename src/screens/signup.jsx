@@ -5,6 +5,7 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
@@ -44,7 +45,12 @@ export default function SignUp({navigation}) {
       <TouchableOpacity
         style={styles.backButton}
         onPress={() => navigation.goBack()}>
-        <Text style={styles.backButtonText}>{'<'}</Text>
+        <Image
+          source={require('../../src/assets/dashboard/backbutton.png')}
+          style={styles.backButton}
+          resizeMode="contain"
+          aspectratio={1}
+        />
       </TouchableOpacity>
       <View style={styles.signupBox}>
         <Text style={styles.signupTitle}>S I G N U P</Text>
@@ -70,7 +76,7 @@ export default function SignUp({navigation}) {
         <TouchableOpacity
           style={styles.signupButton}
           onPress={() => handleSignUp(username, email, password)}>
-          <Text style={styles.signupButtonText}>S I G N U P</Text>
+          <Text style={styles.signupButtonText}>S I G N  U P</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -83,22 +89,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#0E0325',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  backButton: {
-    position: 'absolute',
-    top: 30,
-    left: 20,
-    width: 40,
-    height: 40,
-    borderRadius: 30,
-    borderWidth: 1,
-    borderColor: 'lightgrey',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  backButtonText: {
-    fontSize: 20,
-    color: 'lightgrey',
   },
   signupBox: {
     width: '80%',
@@ -142,5 +132,12 @@ const styles = StyleSheet.create({
     color: 'black',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  backButton: {
+    position: 'absolute',
+    top: '3.5%',
+    left: '5%',
+    width: 40,
+    height: 40,
   },
 });

@@ -26,7 +26,12 @@ const Login = ({navigation}) => {
       <TouchableOpacity
         style={styles.backButton}
         onPress={() => navigation.goBack()}>
-        <Text style={styles.backButtonText}>{'<'}</Text>
+        <Image
+          source={require('../../src/assets/dashboard/backbutton.png')}
+          style={styles.backButton}
+          resizeMode="contain"
+          aspectratio={1}
+        />
       </TouchableOpacity>
       <View style={styles.loginBox}>
         <Text style={styles.loginTitle}>L O G I N</Text>
@@ -75,22 +80,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#0E0325',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  backButton: {
-    position: 'absolute',
-    top: 30,
-    left: 20,
-    width: 40,
-    height: 40,
-    borderRadius: 30,
-    borderWidth: 1,
-    borderColor: 'lightgrey',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  backButtonText: {
-    fontSize: 20,
-    color: 'lightgrey',
   },
   loginBox: {
     width: '80%',
@@ -168,17 +157,24 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 45,
     shadowColor: '#7979B2',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: {width: 0, height: 10},
     shadowOpacity: 0.5,
     shadowRadius: 5,
-    elevation: 20,
+    elevation: 10,
+    borderColor: '#0E0325',
   },
   image: {
     width: '100%',
     height: 57.5,
     borderRadius: 20,
     borderWidth: 5,
-    borderColor: '#0E0325',
+  },
+  backButton: {
+    position: 'absolute',
+    top: '3.5%',
+    left: '5%',
+    width: 40,
+    height: 40,
   },
 });
 
