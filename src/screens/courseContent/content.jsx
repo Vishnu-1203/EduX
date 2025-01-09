@@ -73,7 +73,7 @@ const CourseContent = ({route, navigation}) => {
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.backButton}
-        onPress={() => navigation.goBack()}>
+        onPress={()=>navigation.goBack()}>
         <Image
           source={require('../../../src/assets/dashboard/backbutton.png')}
           style={styles.backButton}
@@ -132,6 +132,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
+    zIndex: 1,
     top: '3.5%',
     left: '5%',
     width: 40,
