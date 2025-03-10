@@ -12,6 +12,8 @@ import {
 const CourseContent = ({route, navigation}) => {
   const [courseData, setCourseData] = useState(null); // State for course data
   const [loading, setLoading] = useState(true); // Loading state
+  const courseId=route.params.courseId
+  console.log("content page",courseId);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,6 +65,7 @@ const CourseContent = ({route, navigation}) => {
           chapterTitle: item.title,
           chapterContent: item.content, // Passing the content of the chapter
           chapterIndex: index, // Passing the index of the chapter
+          CourseId:courseId
         })
       }>
       <Text style={styles.title}>{item.title}</Text>

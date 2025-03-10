@@ -10,7 +10,7 @@ import {
 export default function Courses({navigation}) {
   return (
     <ScrollView style={{flex: 1}}>
-      <View style={styles.container} s>
+      <View style={styles.container} >
         <TouchableOpacity
           style={styles.courses}
           onPress={() =>
