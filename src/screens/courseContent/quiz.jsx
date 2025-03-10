@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+// E:\Blockchain project\EduX\src\screens/QuizPage.jsx
+
+import React, { useState, useEffect, useRef } from "react";
 import { 
   View, 
   Text, 
@@ -15,11 +17,13 @@ const QuizPage = ({ route, navigation }) => {
   const { questions, courseId, quizId } = route.params;
   console.log(route.params, "quiz page route.params");
   
-  const [quizData, setQuizData] = useState({ questions });
+  // Use a ref to keep track of score synchronously
+  const scoreRef = useRef(0);
+  const [quizData] = useState({ questions });
   const [loading, setLoading] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
-  const [score, setScore] = useState(0);
+  const [score, setScore] = useState(0); // For UI display
   const [answers, setAnswers] = useState([]);
   const [quizFinished, setQuizFinished] = useState(false);
   const [timeLeft, setTimeLeft] = useState(30);
@@ -34,7 +38,7 @@ const QuizPage = ({ route, navigation }) => {
       return () => clearInterval(timerId);
     } else if (timeLeft === 0 && !quizFinished) {
       Alert.alert("Time's up!", "The quiz time has expired.");
-      finishQuiz();
+      finishQuiz(scoreRef.current);
     }
   }, [timeLeft, quizFinished]);
 
@@ -45,31 +49,37 @@ const QuizPage = ({ route, navigation }) => {
 
   // Proceed to next question or finish the quiz
   const handleNextQuestion = () => {
-    if (selectedOption === questions[currentQuestionIndex].answer) {
-      setScore(prevScore => prevScore + 1);
+    const currentQuestion = questions[currentQuestionIndex];
+    const isCorrect = selectedOption === currentQuestion.answer;
+    if (isCorrect) {
+      scoreRef.current += 1;
     }
     
+    // Record answer details
     setAnswers(prevAnswers => [
       ...prevAnswers,
       {
-        question: questions[currentQuestionIndex].question,
-        selectedAnswer: questions[currentQuestionIndex].options[selectedOption],
-        correctAnswer: questions[currentQuestionIndex].options[questions[currentQuestionIndex].answer],
-        isCorrect: selectedOption === questions[currentQuestionIndex].answer,
+        question: currentQuestion.question,
+        selectedAnswer: currentQuestion.options[selectedOption],
+        correctAnswer: currentQuestion.options[currentQuestion.answer],
+        isCorrect: isCorrect,
       },
     ]);
     
     if (currentQuestionIndex < questions.length - 1) {
+      setScore(scoreRef.current);
       setCurrentQuestionIndex(prevIndex => prevIndex + 1);
       setSelectedOption(null);
     } else {
-      finishQuiz();
+      setScore(scoreRef.current);
+      finishQuiz(scoreRef.current);
     }
   };
 
-  // Finish quiz and record attempt in Firestore if not already recorded
-  const finishQuiz = async () => {
+  // Finish quiz and record attempt in Firestore using the computed final score
+  const finishQuiz = async (finalScore) => {
     setQuizFinished(true);
+    console.log("Final score to record:", finalScore);
     const userId = auth().currentUser?.uid;
     if (!userId) {
       Alert.alert("Error", "User not authenticated.");
@@ -78,9 +88,9 @@ const QuizPage = ({ route, navigation }) => {
     
     const alreadyAttempted = await hasQuizBeenAttempted(userId, courseId, quizId);
     if (!alreadyAttempted && !rewardGiven) {
-      const recorded = await recordQuizAttempt(userId, courseId, quizId, score);
+      const recorded = await recordQuizAttempt(userId, courseId, quizId, finalScore);
       if (recorded) {
-        console.log("Quiz attempt recorded successfully.");
+        console.log("Quiz attempt recorded successfully with score:", finalScore);
         Alert.alert("Quiz Completed", "Your reward has been recorded!");
       } else {
         console.error("Error recording quiz attempt.");
@@ -132,7 +142,7 @@ const QuizPage = ({ route, navigation }) => {
         ))}
         <TouchableOpacity
           style={styles.nextButton}
-          onPress={() => navigation.navigate("Course1", { courseId: courseId })}
+          onPress={() => navigation.navigate("CourseContent", { courseId })}
         >
           <Text style={styles.nextButtonText}>Back to Content</Text>
         </TouchableOpacity>
@@ -179,7 +189,6 @@ const QuizPage = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  // Container for quiz in progress (non-scroll view)
   container: {
     flex: 1,
     backgroundColor: "#0E0325",
@@ -187,7 +196,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  // ScrollView style for finished quiz view
   scrollContainer: {
     flex: 1,
     backgroundColor: "#0E0325",

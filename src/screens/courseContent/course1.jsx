@@ -11,12 +11,11 @@ import {
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AboutCourse = ({ route, navigation }) => {
   const [isJoining, setIsJoining] = useState(false);
-  const { courseId } = route.params; // Assume courseId is passed from navigation
-  console.log('entered course 1 file');
+  const { courseId } = route.params; // Expecting courseId from navigation
+  console.log('entered AboutCourse screen');
 
   // Fetch course details from Firestore
   const fetchCourseDetails = async () => {
@@ -29,7 +28,7 @@ const AboutCourse = ({ route, navigation }) => {
         const courseData = courseDoc.data();
         console.log(courseData);
         if (courseData && courseData.contents) {
-          return courseData; // Ensure contents exists before returning
+          return courseData;
         } else {
           console.log("Course data does not have 'contents' field.");
           return null;
@@ -46,9 +45,8 @@ const AboutCourse = ({ route, navigation }) => {
 
   // Handle Join Course Button
   const joinCourse = async () => {
-    console.log('enter join course:');
+    console.log('Entering join course...');
     const user = auth().currentUser;
-
     setIsJoining(true);
 
     if (!user) {
@@ -56,6 +54,7 @@ const AboutCourse = ({ route, navigation }) => {
       setIsJoining(false);
       return;
     }
+
     try {
       const userDocRef = firestore().collection('users').doc(user.uid);
       const userDocSnap = await userDocRef.get();
@@ -72,18 +71,15 @@ const AboutCourse = ({ route, navigation }) => {
           reward: 0,
         });
       } else {
-        // Update user's joined courses and ensure reward is defined
+        // Update user's joined courses and reward
         const userData = userDocSnap.data();
         console.log('User data:', userData);
         console.log('Joined courses:', userData.joinedCourses);
 
-        // Ensure joinedCourses is an array and filter out undefined or null values
         const existingCourses = Array.isArray(userData.joinedCourses)
           ? userData.joinedCourses.filter(course => course !== undefined && course !== null)
           : [];
-        // Create a new array that includes the current courseId (avoid duplicates)
         const updatedCourses = [...new Set([...existingCourses, courseId])];
-        // Ensure reward is defined; if not, default to 0
         const currentReward = typeof userData.reward === 'number' ? userData.reward : 0;
         console.log('Updating joinedCourses with:', updatedCourses, 'and reward:', currentReward);
 
@@ -93,13 +89,11 @@ const AboutCourse = ({ route, navigation }) => {
         });
       }
 
-      // Fetch course content
-      const courseData = await fetchCourseDetails();
-      console.log(courseData, "course1 page");
-      if (courseData) {
-        // Save course content to AsyncStorage and navigate to CourseContent
-        await AsyncStorage.setItem('UI/UX', JSON.stringify(courseData));
-        navigation.navigate('CourseContent', { courseData, courseId });
+      // Fetch course content and pass it manually via navigation parameters
+      const fetchedCourseData = await fetchCourseDetails();
+      console.log(fetchedCourseData, "AboutCourse page");
+      if (fetchedCourseData) {
+        navigation.navigate('CourseContent', { courseData: fetchedCourseData, courseId });
       }
     } catch (error) {
       console.error('Error joining course:', error);

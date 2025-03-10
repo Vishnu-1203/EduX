@@ -1,5 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, {useState, useEffect} from 'react';
+// E:\Blockchain project\EduX\src\screens/CourseContent.jsx
+
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,43 +9,43 @@ import {
   StyleSheet,
   Image,
 } from 'react-native';
+import firestore from '@react-native-firebase/firestore';
 
-const CourseContent = ({route, navigation}) => {
-  const [courseData, setCourseData] = useState(null); // State for course data
-  const [loading, setLoading] = useState(true); // Loading state
-  const courseId=route.params.courseId
-  console.log("content page",courseId);
+const CourseContent = ({ route, navigation }) => {
+  // Destructure courseId and (optionally) courseData from route.params
+  const { courseData: passedCourseData, courseId } = route.params;
+  const [courseData, setCourseData] = useState(passedCourseData);
+  const [loading, setLoading] = useState(!passedCourseData);
 
+  // If courseData was not passed, fetch it using courseId
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const storedData = await AsyncStorage.getItem('UI/UX');
-        if (storedData) {
-          const parsedData = JSON.parse(storedData); // Parse the stored JSON
-          setCourseData(parsedData); // Update state with retrieved data
-        } else {
-          console.log("No data found in AsyncStorage for 'UI/UX'");
-        }
-      } catch (error) {
-        console.error('Error fetching or parsing AsyncStorage data:', error);
-      } finally {
-        setLoading(false); // Stop loading
-      }
-    };
+    if (!courseData) {
+      firestore()
+        .collection('courses')
+        .doc(courseId)
+        .get()
+        .then(doc => {
+          if (doc.exists) {
+            setCourseData(doc.data());
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching course data:", error);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [courseId, courseData]);
 
-    fetchData();
-  }, []); // Runs only once after the component mounts
-
-  // Show loading indicator while fetching data
   if (loading) {
     return (
       <View style={styles.container}>
-        <Text>Loading...</Text>
+        <Text style={{ color: "lightgrey" }}>Loading course data...</Text>
       </View>
     );
   }
 
-  // Ensure courseData is available before proceeding
   if (!courseData) {
     return (
       <View style={styles.container}>
@@ -53,21 +54,22 @@ const CourseContent = ({route, navigation}) => {
     );
   }
 
-  const {chapters} = courseData.contents; // Access chapters from retrieved data
+  const { chapters } = courseData.contents; // Access chapters from courseData
 
   // Render each chapter title
-  const renderItem = ({item, index}) => (
+  const renderItem = ({ item, index }) => (
     <TouchableOpacity
       style={styles.card}
       onPress={() =>
         navigation.navigate('cardsPage', {
-          fullData: courseData.contents, // Passing all chapters' data
+          fullData: courseData.contents, // Passing full content data
           chapterTitle: item.title,
-          chapterContent: item.content, // Passing the content of the chapter
-          chapterIndex: index, // Passing the index of the chapter
-          CourseId:courseId
+          chapterContent: item.content,
+          chapterIndex: index,
+          courseId: courseId,
         })
-      }>
+      }
+    >
       <Text style={styles.title}>{item.title}</Text>
     </TouchableOpacity>
   );
@@ -76,7 +78,9 @@ const CourseContent = ({route, navigation}) => {
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.backButton}
-        onPress={()=>navigation.goBack()}>
+        // Navigate to the main page (Dashboard) instead of going back
+        onPress={() => navigation.navigate("Dashboard")}
+      >
         <Image
           source={require('../../../src/assets/dashboard/backbutton.png')}
           style={styles.backButton}
@@ -91,9 +95,9 @@ const CourseContent = ({route, navigation}) => {
       />
       <Text style={styles.title}>Course Content</Text>
       <FlatList
-        data={chapters} // Rendering chapters
+        data={chapters}
         renderItem={renderItem}
-        keyExtractor={item => (item.id ? item.id.toString() : item.title)} // Ensure key is unique
+        keyExtractor={(item) => (item.id ? item.id.toString() : item.title)}
       />
     </View>
   );
@@ -108,15 +112,13 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#0E0325',
     padding: 16,
-    borderWidth: 3,
+    borderWidth: 2,
     borderRadius: 15,
-    elevation: 3,
     shadowColor: '#7979B2',
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 10,
     shadowRadius: 10,
     elevation: 8,
-    borderWidth: 2,
     borderColor: '#7979B2',
     paddingTop: 35,
     paddingBottom: 35,

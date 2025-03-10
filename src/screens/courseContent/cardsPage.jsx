@@ -1,3 +1,5 @@
+// E:\Blockchain project\EduX\src\screens/CardsPage.jsx
+
 import React, { useState } from 'react';
 import {
   View,
@@ -10,10 +12,11 @@ import { useNavigation } from '@react-navigation/native';
 
 const CardsPage = ({ route }) => {
   // Destructure passed data from CourseContent
-  const { chapterTitle, chapterContent, fullData, chapterIndex, CourseId } = route.params;
+  // Note: Use 'courseId' (lowercase) to match what was passed
+  const { chapterTitle, chapterContent, fullData, chapterIndex, courseId } = route.params;
   
-  // Derive a unique quiz ID based on CourseId and chapterIndex
-  const quizId = `${CourseId}_quiz_${chapterIndex}`;
+  // Derive a unique quiz ID based on courseId and chapterIndex
+  const quizId = `${courseId}_quiz_${chapterIndex}`;
   console.log('Derived quizId:', quizId);
 
   const navigation = useNavigation();
@@ -69,7 +72,7 @@ const CardsPage = ({ route }) => {
             if (currentCardIndex === chapterContent.length - 1) {
               navigation.navigate('QuizPage', {
                 questions: currentQuiz?.questions,
-                courseId: CourseId,  // Pass the course ID
+                courseId: courseId,  // Pass the course ID correctly
                 quizId: quizId,      // Pass the derived quiz ID
               });
             } else {
@@ -108,9 +111,6 @@ const styles = StyleSheet.create({
   // Apply layout properties here via contentContainerStyle
   cardsContentContainer: {
     flexGrow: 1,
-    // Optionally, you can add alignment properties if needed:
-    // alignItems: 'center',
-    // justifyContent: 'center',
   },
   card: {
     borderWidth: 3,
