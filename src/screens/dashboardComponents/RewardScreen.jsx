@@ -4,7 +4,6 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import Config from 'react-native-config';
 import { convertRewardToToken, getMetamaskSigner } from '../../utils/blockchain';
-import MyContractABI from '../../contracts/MyContractABI.json'; // Ensure this file exists
 
 export default function RewardScreen({ navigation }) {
   const [reward, setReward] = useState(0);
