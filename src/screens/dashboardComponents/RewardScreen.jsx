@@ -4,6 +4,7 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import Config from 'react-native-config';
 import { convertRewardToToken, getMetamaskSigner } from '../../utils/blockchain';
+import MyContractABI from '../../contracts/MyContractABI.json'; // Ensure this file is populated with your ABI
 
 export default function RewardScreen({ navigation }) {
   const [reward, setReward] = useState(0);
@@ -33,8 +34,10 @@ export default function RewardScreen({ navigation }) {
         return;
       }
       
-      // Call the convertRewardToToken function from blockchain utilities.
-      // 'true' means using MetaMask signer (for production use).
+      // Ensure MetaMask is connected (or fallback to test signer)
+      await getMetamaskSigner();
+      
+      // Call convertRewardToToken using your ABI, the reward value, and MetaMask (or test signer)
       const tx = await convertRewardToToken(CONTRACT_ADDRESS, MyContractABI, reward, true);
       Alert.alert("Conversion Successful", `Transaction hash: ${tx.hash}`);
     } catch (error) {
@@ -45,9 +48,10 @@ export default function RewardScreen({ navigation }) {
 
   const handleConnectMetaMask = async () => {
     try {
-      // Simply try to get a MetaMask signer; if it succeeds, notify the user.
-      await getMetamaskSigner();
-      Alert.alert("MetaMask Connected", "MetaMask wallet connected successfully.");
+      const signer = await getMetamaskSigner();
+      if (signer) {
+        Alert.alert("MetaMask Connected", "MetaMask wallet connected successfully.");
+      }
     } catch (error) {
       console.error("Error connecting MetaMask:", error);
       Alert.alert("Connection Error", error.message);
