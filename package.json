@@ -24,8 +24,10 @@
     "react-native": "0.76.5",
     "react-native-config": "^1.5.5",
     "react-native-gesture-handler": "^2.21.2",
+    "react-native-get-random-values": "^1.11.0",
     "react-native-safe-area-context": "^5.0.0",
-    "react-native-screens": "^4.4.0"
+    "react-native-screens": "^4.4.0",
+    "react-native-url-polyfill": "^2.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
