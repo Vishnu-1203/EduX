@@ -1,20 +1,22 @@
-// src/utils/blockchain.js
-
-// Import polyfills for React Native
 import 'react-native-get-random-values';
 import 'react-native-url-polyfill/auto';
+import { Buffer } from 'buffer';
+global.Buffer = Buffer;
 
 import * as ethers from 'ethers';
 import Config from 'react-native-config';
 
-// Create a provider using your Infura project ID
+// Create a provider using your Infura project ID with explicit network configuration for Sepolia
 export const createProvider = () => {
   if (!Config.INFURA_PROJECT_ID) {
     throw new Error("INFURA_PROJECT_ID not set in environment variables");
   }
-  return new ethers.providers.JsonRpcProvider(
-    `https://sepolia.infura.io/v3/${Config.INFURA_PROJECT_ID}`
-  );
+  const url = `https://sepolia.infura.io/v3/${Config.INFURA_PROJECT_ID}`;
+  // Specify chainId 11155111 (Sepolia), network name, and disable ENS
+  const provider = new ethers.JsonRpcProvider(url, { chainId: 11155111, name: 'sepolia', ensAddress: null });
+  // Override getEnsAddress to prevent any ENS lookup
+  provider.getEnsAddress = async (name) => null;
+  return provider;
 };
 
 export const provider = createProvider();
@@ -28,7 +30,7 @@ export const getTestSigner = () => {
 };
 
 // Get a MetaMask signer (for when users connect their wallet)
-// In React Native, window.ethereum is not available so we fall back to test signer.
+// In React Native, window.ethereum is typically unavailable so we fallback to test signer.
 export const getMetamaskSigner = async () => {
   if (typeof window !== 'undefined' && window.ethereum) {
     await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -40,7 +42,7 @@ export const getMetamaskSigner = async () => {
   }
 };
 
-// Get a contract instance with a signer
+// Get a contract instance with a signer, ensuring the contract address is valid.
 export const getContractWithSigner = async (contractAddress, contractABI, useMetaMask = false) => {
   let signer;
   if (useMetaMask) {
@@ -48,7 +50,9 @@ export const getContractWithSigner = async (contractAddress, contractABI, useMet
   } else {
     signer = getTestSigner();
   }
-  return new ethers.Contract(contractAddress, contractABI, signer);
+  // Resolve the address to a proper checksummed address.
+  const resolvedAddress = ethers.getAddress(contractAddress);
+  return new ethers.Contract(resolvedAddress, contractABI, signer);
 };
 
 // Convert reward to a blockchain token
