@@ -1,11 +1,12 @@
-import React,{useEffect} from "react";
-import Navigation from "./src/navigation/navigation"; // Correct path to navigation.jsx
-import analytics from "@react-native-firebase/analytics";
-import firestore from "@react-native-firebase/firestore";
+// App.js
+import React from 'react';
+import Navigation from './src/navigation/navigation'; // Adjust path as needed
+import { WalletConnectProvider } from './src/providers/WalletConnectProvider';
 
-const App = () => {
-  return <Navigation />;
-};
-
-export default App;
-
+export default function App() {
+  return (
+    <WalletConnectProvider>
+      <Navigation />
+    </WalletConnectProvider>
+  );
+}

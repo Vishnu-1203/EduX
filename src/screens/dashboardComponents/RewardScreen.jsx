@@ -1,21 +1,31 @@
-import React, { useEffect, useState } from 'react';
+// src/screens/dashboardComponents/RewardScreen.jsx
+import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import Config from 'react-native-config';
-import { convertRewardToToken, getMetamaskSigner } from '../../utils/blockchain';
-import MyContractABI from '../../contracts/MyContractABI.json'; // Ensure this file is populated with your ABI
+import { convertRewardToToken, getTestSigner, getTokenBalance } from '../../utils/blockchain';
+import MyContractABI from '../../contracts/MyContractABI.json';
+import { WalletConnectContext } from '../../providers/WalletConnectProvider';
 
 export default function RewardScreen({ navigation }) {
   const [reward, setReward] = useState(0);
+  const [tokens, setTokens] = useState(0); // Backend token balance
+  const [walletTokenBalance, setWalletTokenBalance] = useState('0'); // Wallet token balance fetched from blockchain
+  const [walletConnected, setWalletConnected] = useState(false);
+  const [walletAddress, setWalletAddress] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Log env variables on mount
+  const { session, connectWallet, getEthersSigner } = useContext(WalletConnectContext);
+
+  // Log environment variables on mount
   useEffect(() => {
     console.log("INFURA_PROJECT_ID:", Config.INFURA_PROJECT_ID);
-    console.log("PRIVATE_KEY:", Config.PRIVATE_KEY);
+    console.log("PRIVATE_KEY:", Config.PRIVATE_KEY ? "set" : "not set");
     console.log("CONTRACT_ADDRESS:", Config.CONTRACT_ADDRESS);
   }, []);
 
+  // Listen for reward and tokens updates from Firestore in real time
   useEffect(() => {
     const userId = auth().currentUser?.uid;
     if (userId) {
@@ -26,40 +36,100 @@ export default function RewardScreen({ navigation }) {
           if (doc.exists) {
             const data = doc.data();
             setReward(data.reward || 0);
+            setTokens(data.tokens || 0);
           }
         });
       return () => unsubscribe();
     }
   }, []);
 
-  const handleConvertReward = async () => {
+  // Fetch the wallet's token balance when connected
+  useEffect(() => {
+    if (walletConnected && walletAddress) {
+      fetchWalletTokenBalance();
+    }
+  }, [walletConnected, walletAddress]);
+
+  const fetchWalletTokenBalance = async () => {
     try {
-      const CONTRACT_ADDRESS = Config.CONTRACT_ADDRESS;
-      if (!CONTRACT_ADDRESS) {
-        Alert.alert("Configuration Error", "Contract address not set in environment variables.");
-        return;
-      }
-      
-      // Ensure MetaMask is connected (or fallback to test signer)
-      await getMetamaskSigner();
-      
-      const tx = await convertRewardToToken(CONTRACT_ADDRESS, MyContractABI, reward, true);
-      Alert.alert("Conversion Successful", `Transaction hash: ${tx.hash}`);
+      // Use TOKEN_CONTRACT_ADDRESS if defined, otherwise fall back to CONTRACT_ADDRESS
+      const tokenContractAddress = Config.TOKEN_CONTRACT_ADDRESS || Config.CONTRACT_ADDRESS;
+      const balance = await getTokenBalance(tokenContractAddress, walletAddress);
+      setWalletTokenBalance(balance);
     } catch (error) {
-      console.error("Error converting reward to token:", error);
-      Alert.alert("Conversion Error", "Failed to convert reward to token.");
+      console.error("Error fetching token balance", error);
     }
   };
 
-  const handleConnectMetaMask = async () => {
+  const handleConnectWallet = async () => {
+    if (!connectWallet) {
+      Alert.alert("Error", "WalletConnect provider not initialized.");
+      return;
+    }
+    setIsLoading(true);
     try {
-      const signer = await getMetamaskSigner();
-      if (signer) {
-        Alert.alert("MetaMask Connected", "MetaMask wallet connected successfully.");
+      const session = await connectWallet();
+      if (session) {
+        const account = session.namespaces.eip155.accounts[0].split(':')[2];
+        setWalletAddress(account);
+        setWalletConnected(true);
+        Alert.alert("Wallet Connected", `Connected: ${account.substring(0, 6)}...${account.substring(account.length - 4)}`);
       }
     } catch (error) {
-      console.error("Error connecting MetaMask:", error);
-      Alert.alert("Connection Error", error.message);
+      console.error("Error connecting wallet:", error);
+      Alert.alert("Connection Error", error.message || "Failed to connect wallet.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleConvertReward = async () => {
+    try {
+      setIsLoading(true);
+      const CONTRACT_ADDRESS = Config.CONTRACT_ADDRESS;
+      if (!CONTRACT_ADDRESS) {
+        Alert.alert("Configuration Error", "Contract address not set in environment variables.");
+        setIsLoading(false);
+        return;
+      }
+
+      let signer;
+      if (walletConnected && session) {
+        try {
+          signer = getEthersSigner();
+        } catch (error) {
+          console.error("Error getting WalletConnect signer:", error);
+          signer = getTestSigner();
+        }
+      } else {
+        signer = getTestSigner();
+      }
+
+      // Convert reward to token on-chain
+      const tx = await convertRewardToToken(CONTRACT_ADDRESS, MyContractABI, reward, signer);
+
+      // Update Firestore: reset reward and add redeemed reward to token balance
+      const userId = auth().currentUser?.uid;
+      if (userId) {
+        const userDoc = await firestore().collection('users').doc(userId).get();
+        const userData = userDoc.data() || {};
+        const currentTokens = userData.tokens || 0;
+        await firestore().collection('users').doc(userId).update({
+          reward: 0,
+          tokens: currentTokens + reward,
+        });
+      }
+
+      Alert.alert("Conversion Successful", `Transaction hash: ${tx.hash}`);
+      // Refresh wallet token balance after conversion
+      if (walletConnected && walletAddress) {
+        fetchWalletTokenBalance();
+      }
+    } catch (error) {
+      console.error("Error converting reward to token:", error);
+      Alert.alert("Conversion Error", error.message || "Failed to convert reward to token.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -68,19 +138,44 @@ export default function RewardScreen({ navigation }) {
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Text style={styles.backButtonText}>← Back</Text>
       </TouchableOpacity>
-      
+
       <Text style={styles.title}>Your Rewards</Text>
       <Text style={styles.rewardText}>Current Reward: {reward}</Text>
-      
-      <TouchableOpacity style={styles.button} onPress={handleConvertReward}>
-        <Text style={styles.buttonText}>Convert to Token</Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity style={styles.button} onPress={handleConnectMetaMask}>
-        <Text style={styles.buttonText}>Connect MetaMask</Text>
-      </TouchableOpacity>
-      
-      {/* Display env variables for debugging */}
+      <Text style={styles.tokenText}>Total Tokens (Backend): {tokens}</Text>
+      {walletConnected && (
+        <Text style={styles.balanceText}>Wallet Token Balance: {walletTokenBalance}</Text>
+      )}
+
+      {isLoading ? (
+        <Text style={styles.loadingText}>Processing...</Text>
+      ) : (
+        <>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleConvertReward}
+            disabled={reward <= 0}
+          >
+            <Text style={styles.buttonText}>Convert to Token</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.button, walletConnected && styles.connectedButton]}
+            onPress={handleConnectWallet}
+          >
+            <Text style={styles.buttonText}>
+              {walletConnected ? 'Wallet Connected' : 'Connect Wallet'}
+            </Text>
+          </TouchableOpacity>
+
+          {walletConnected && (
+            <Text style={styles.walletText}>
+              {walletAddress.substring(0, 6)}...{walletAddress.substring(walletAddress.length - 4)}
+            </Text>
+          )}
+        </>
+      )}
+
+      {/* Debug: Display environment variables */}
       <View style={styles.envContainer}>
         <Text style={styles.envText}>
           INFURA_PROJECT_ID: {Config.INFURA_PROJECT_ID || "undefined"}
@@ -126,7 +221,22 @@ const styles = StyleSheet.create({
   rewardText: {
     fontSize: 22,
     color: "white",
-    marginBottom: 30,
+    marginBottom: 10,
+  },
+  tokenText: {
+    fontSize: 22,
+    color: "lightgreen",
+    marginBottom: 10,
+  },
+  balanceText: {
+    fontSize: 20,
+    color: "cyan",
+    marginBottom: 20,
+  },
+  loadingText: {
+    fontSize: 18,
+    color: "#7979B2",
+    marginVertical: 20,
   },
   button: {
     backgroundColor: "#7979B2",
@@ -137,10 +247,18 @@ const styles = StyleSheet.create({
     width: '80%',
     alignItems: 'center',
   },
+  connectedButton: {
+    backgroundColor: "#4CAF50",
+  },
   buttonText: {
     fontSize: 18,
     color: "white",
     fontWeight: 'bold',
+  },
+  walletText: {
+    color: "#4CAF50",
+    fontSize: 16,
+    marginBottom: 15,
   },
   envContainer: {
     marginTop: 30,
