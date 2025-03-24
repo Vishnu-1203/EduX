@@ -1,29 +1,35 @@
 // src/screens/dashboardComponents/RewardScreen.jsx
-import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import Config from 'react-native-config';
 import { convertRewardToToken, getTestSigner, getTokenBalance } from '../../utils/blockchain';
 import MyContractABI from '../../contracts/MyContractABI.json';
-import { WalletConnectProvider, useWalletConnect } from '@walletconnect/react-native-dapp';
+import { useWalletConnect } from '@walletconnect/react-native-dapp';
+
+// Log WalletConnect package version
+const walletConnectPkg = require('@walletconnect/react-native-dapp/package.json');
+console.log("WalletConnect version:", walletConnectPkg.version);
 
 export default function RewardScreen({ navigation }) {
   const [reward, setReward] = useState(0);
   const [tokens, setTokens] = useState(0); // Backend token balance
-  const [walletTokenBalance, setWalletTokenBalance] = useState('0'); // Wallet token balance fetched from blockchain
+  const [walletTokenBalance, setWalletTokenBalance] = useState('0'); // Wallet token balance from blockchain
   const [walletConnected, setWalletConnected] = useState(false);
   const [walletAddress, setWalletAddress] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Use the WalletConnect hook
+  // Get WalletConnect connector using the hook
   const connector = useWalletConnect();
 
-  // Log environment variables on mount
+  // Log environment variables and connector details on mount
   useEffect(() => {
     console.log("INFURA_PROJECT_ID:", Config.INFURA_PROJECT_ID);
     console.log("PRIVATE_KEY:", Config.PRIVATE_KEY ? "set" : "not set");
     console.log("CONTRACT_ADDRESS:", Config.CONTRACT_ADDRESS);
+    console.log("WalletConnect connector object:", connector);
+    console.log("WalletConnect connector keys:", Object.keys(connector));
   }, []);
 
   // Listen for reward and tokens updates from Firestore in real time
@@ -36,6 +42,7 @@ export default function RewardScreen({ navigation }) {
         .onSnapshot(doc => {
           if (doc.exists) {
             const data = doc.data();
+            console.log("Firestore data:", data);
             setReward(data.reward || 0);
             setTokens(data.tokens || 0);
           }
@@ -53,25 +60,42 @@ export default function RewardScreen({ navigation }) {
 
   const fetchWalletTokenBalance = async () => {
     try {
-      // Use TOKEN_CONTRACT_ADDRESS if defined, otherwise fall back to CONTRACT_ADDRESS
       const tokenContractAddress = Config.TOKEN_CONTRACT_ADDRESS || Config.CONTRACT_ADDRESS;
       const balance = await getTokenBalance(tokenContractAddress, walletAddress);
       setWalletTokenBalance(balance);
+      console.log("Fetched wallet token balance:", balance);
     } catch (error) {
       console.error("Error fetching token balance", error);
     }
   };
 
-  // Handle WalletConnect connection using MetaMask
+  // Updated wallet connection handler with additional debug logging for key/seed issues
   const handleConnectWallet = async () => {
     if (!connector.connected) {
       try {
         setIsLoading(true);
-        // This will trigger a deep link to MetaMask (or any supported wallet)
-        await connector.connect();
+        console.log("Before connect, _key:", connector._key);
+        // Attempt to connect via standard method
+        if (typeof connector.connect === 'function') {
+          await connector.connect();
+        } else if (typeof connector.createSession === 'function') {
+          await connector.createSession();
+        } else {
+          throw new Error("WalletConnect connector does not support connect or createSession.");
+        }
+        console.log("After connect, _key:", connector._key);
+        if (connector._key && connector._key.seed) {
+          console.log("Connector key seed:", connector._key.seed);
+        } else {
+          console.warn("Connector _key is missing seed property:", connector._key);
+        }
+        if (!connector.accounts || connector.accounts.length === 0) {
+          throw new Error("No accounts available after connection.");
+        }
         const account = connector.accounts[0];
         setWalletAddress(account);
         setWalletConnected(true);
+        console.log("Wallet connected with account:", account);
         Alert.alert("Wallet Connected", `Connected: ${account.substring(0, 6)}...${account.slice(-4)}`);
       } catch (error) {
         console.error("Error connecting wallet:", error);
@@ -82,6 +106,8 @@ export default function RewardScreen({ navigation }) {
     } else {
       Alert.alert("Wallet already connected", `Connected: ${connector.accounts[0]}`);
     }
+    console.log("WalletConnect connector keys after connect attempt:", Object.keys(connector));
+    console.log("Full connector object after connect attempt:", JSON.stringify(connector, null, 2));
   };
 
   const handleConvertReward = async () => {
@@ -95,13 +121,8 @@ export default function RewardScreen({ navigation }) {
       }
 
       let signer;
-      // Use WalletConnect signer if connected; otherwise fall back to test signer
       if (walletConnected && connector.connected) {
         try {
-          // If you have a function to extract an ethers signer from the connector, use it.
-          // For example, if your WalletConnect provider exposes a getEthersSigner method, call that.
-          // Otherwise, you might build your own signer using connector's session info.
-          // Here we assume getEthersSigner is available in your WalletConnect context.
           signer = connector.getEthersSigner ? connector.getEthersSigner() : getTestSigner();
         } catch (error) {
           console.error("Error getting WalletConnect signer:", error);
@@ -111,10 +132,8 @@ export default function RewardScreen({ navigation }) {
         signer = getTestSigner();
       }
 
-      // Convert reward to token on-chain
       const tx = await convertRewardToToken(CONTRACT_ADDRESS, MyContractABI, reward, signer);
 
-      // Update Firestore: reset reward and add redeemed reward to token balance
       const userId = auth().currentUser?.uid;
       if (userId) {
         const userDoc = await firestore().collection('users').doc(userId).get();
@@ -127,7 +146,6 @@ export default function RewardScreen({ navigation }) {
       }
 
       Alert.alert("Conversion Successful", `Transaction hash: ${tx.hash}`);
-      // Refresh wallet token balance after conversion
       if (walletConnected && walletAddress) {
         fetchWalletTokenBalance();
       }
@@ -140,7 +158,7 @@ export default function RewardScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Text style={styles.backButtonText}>← Back</Text>
       </TouchableOpacity>
@@ -181,7 +199,6 @@ export default function RewardScreen({ navigation }) {
         </>
       )}
 
-      {/* Debug: Display environment variables */}
       <View style={styles.envContainer}>
         <Text style={styles.envText}>
           INFURA_PROJECT_ID: {Config.INFURA_PROJECT_ID || "undefined"}
@@ -193,13 +210,13 @@ export default function RewardScreen({ navigation }) {
           CONTRACT_ADDRESS: {Config.CONTRACT_ADDRESS || "undefined"}
         </Text>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: "#0E0325",
     justifyContent: 'center',
     alignItems: 'center',
@@ -223,6 +240,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: "white",
     marginBottom: 20,
+    textAlign: 'center',
   },
   rewardText: {
     fontSize: 22,
