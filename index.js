@@ -17,7 +17,7 @@ if (typeof global.TextDecoder === 'undefined') {
 // Polyfill global.crypto if it doesn't exist
 if (typeof global.crypto === 'undefined') {
   global.crypto = {
-    getRandomValues: require('react-native-get-random-values').getRandomValues
+    getRandomValues: require('react-native-get-random-values').getRandomValues,
   };
 }
 

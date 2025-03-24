@@ -6,7 +6,7 @@ import auth from '@react-native-firebase/auth';
 import Config from 'react-native-config';
 import { convertRewardToToken, getTestSigner, getTokenBalance } from '../../utils/blockchain';
 import MyContractABI from '../../contracts/MyContractABI.json';
-import { WalletConnectContext } from '../../providers/WalletConnectProvider';
+import { WalletConnectProvider, useWalletConnect } from '@walletconnect/react-native-dapp';
 
 export default function RewardScreen({ navigation }) {
   const [reward, setReward] = useState(0);
@@ -16,7 +16,8 @@ export default function RewardScreen({ navigation }) {
   const [walletAddress, setWalletAddress] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const { session, connectWallet, getEthersSigner } = useContext(WalletConnectContext);
+  // Use the WalletConnect hook
+  const connector = useWalletConnect();
 
   // Log environment variables on mount
   useEffect(() => {
@@ -61,25 +62,25 @@ export default function RewardScreen({ navigation }) {
     }
   };
 
+  // Handle WalletConnect connection using MetaMask
   const handleConnectWallet = async () => {
-    if (!connectWallet) {
-      Alert.alert("Error", "WalletConnect provider not initialized.");
-      return;
-    }
-    setIsLoading(true);
-    try {
-      const session = await connectWallet();
-      if (session) {
-        const account = session.namespaces.eip155.accounts[0].split(':')[2];
+    if (!connector.connected) {
+      try {
+        setIsLoading(true);
+        // This will trigger a deep link to MetaMask (or any supported wallet)
+        await connector.connect();
+        const account = connector.accounts[0];
         setWalletAddress(account);
         setWalletConnected(true);
-        Alert.alert("Wallet Connected", `Connected: ${account.substring(0, 6)}...${account.substring(account.length - 4)}`);
+        Alert.alert("Wallet Connected", `Connected: ${account.substring(0, 6)}...${account.slice(-4)}`);
+      } catch (error) {
+        console.error("Error connecting wallet:", error);
+        Alert.alert("Connection Error", error.message || "Failed to connect wallet.");
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Error connecting wallet:", error);
-      Alert.alert("Connection Error", error.message || "Failed to connect wallet.");
-    } finally {
-      setIsLoading(false);
+    } else {
+      Alert.alert("Wallet already connected", `Connected: ${connector.accounts[0]}`);
     }
   };
 
@@ -94,9 +95,14 @@ export default function RewardScreen({ navigation }) {
       }
 
       let signer;
-      if (walletConnected && session) {
+      // Use WalletConnect signer if connected; otherwise fall back to test signer
+      if (walletConnected && connector.connected) {
         try {
-          signer = getEthersSigner();
+          // If you have a function to extract an ethers signer from the connector, use it.
+          // For example, if your WalletConnect provider exposes a getEthersSigner method, call that.
+          // Otherwise, you might build your own signer using connector's session info.
+          // Here we assume getEthersSigner is available in your WalletConnect context.
+          signer = connector.getEthersSigner ? connector.getEthersSigner() : getTestSigner();
         } catch (error) {
           console.error("Error getting WalletConnect signer:", error);
           signer = getTestSigner();
