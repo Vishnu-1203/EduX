@@ -1,6 +1,6 @@
 // E:\Blockchain project\EduX\src\screens/CourseContent.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -10,12 +10,17 @@ import {
   Image,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
+// Import the chatbot components
+import ChatbotFAB from '../../utils/ChatbotFAB';
+import ChatbotOverlay from '../../utils/ChatbotOverlay';
 
 const CourseContent = ({ route, navigation }) => {
   // Destructure courseId and (optionally) courseData from route.params
   const { courseData: passedCourseData, courseId } = route.params;
   const [courseData, setCourseData] = useState(passedCourseData);
   const [loading, setLoading] = useState(!passedCourseData);
+  const [chatVisible, setChatVisible] = useState(false); // State to control chatbot overlay
+  const chatbotRef = useRef(null); // Add a ref for the ChatbotOverlay
 
   // If courseData was not passed, fetch it using courseId
   useEffect(() => {
@@ -37,6 +42,19 @@ const CourseContent = ({ route, navigation }) => {
         });
     }
   }, [courseId, courseData]);
+
+  // Add useEffect to add course context to chatbot when courseData is loaded
+  useEffect(() => {
+    if (courseData && chatbotRef.current) {
+      // Prepare course context string for the chatbot
+      const courseContext = `Course: ${courseData.title || 'Unknown'}\n` +
+                           `Description: ${courseData.description || 'No description available'}\n` +
+                           `Chapters: ${courseData.contents?.chapters?.length || 0}`;
+      
+      // Add context to chatbot
+      chatbotRef.current.addCourseContext(courseContext);
+    }
+  }, [courseData, chatbotRef.current]);
 
   if (loading) {
     return (
@@ -76,9 +94,9 @@ const CourseContent = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
+      {/* Back Button */}
       <TouchableOpacity
         style={styles.backButton}
-        // Navigate to the main page (Dashboard) instead of going back
         onPress={() => navigation.navigate("Dashboard")}
       >
         <Image
@@ -88,6 +106,7 @@ const CourseContent = ({ route, navigation }) => {
           aspectRatio={1}
         />
       </TouchableOpacity>
+      
       <Image
         source={require('../../../src/assets/dashboard/coursefirst.png')}
         style={styles.coursefirst}
@@ -98,6 +117,16 @@ const CourseContent = ({ route, navigation }) => {
         data={chapters}
         renderItem={renderItem}
         keyExtractor={(item) => (item.id ? item.id.toString() : item.title)}
+      />
+
+      {/* Chatbot Floating Action Button (bottom left) */}
+      <ChatbotFAB onPress={() => setChatVisible(true)} />
+
+      {/* Chatbot Overlay Modal - Added ref */}
+      <ChatbotOverlay 
+        ref={chatbotRef}
+        visible={chatVisible} 
+        onClose={() => setChatVisible(false)} 
       />
     </View>
   );
