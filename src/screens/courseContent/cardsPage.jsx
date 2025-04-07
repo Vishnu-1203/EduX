@@ -1,6 +1,4 @@
-// E:\Blockchain project\EduX\src\screens/CardsPage.jsx
-
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,26 +8,49 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
+// Chatbot components
+import ChatbotFAB from '../../utils/ChatbotFAB';
+import ChatbotOverlay from '../../utils/ChatbotOverlay';
+
 const CardsPage = ({ route }) => {
-  // Destructure passed data from CourseContent
-  // Note: Use 'courseId' (lowercase) to match what was passed
   const { chapterTitle, chapterContent, fullData, chapterIndex, courseId } = route.params;
-  
-  // Derive a unique quiz ID based on courseId and chapterIndex
+
   const quizId = `${courseId}_quiz_${chapterIndex}`;
   console.log('Derived quizId:', quizId);
 
   const navigation = useNavigation();
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const [chatVisible, setChatVisible] = useState(false);
+  const chatbotRef = useRef(null);
 
-  // Move to the next card
+  // Send chapter context to chatbot
+  useEffect(() => {
+    if (fullData) {
+      const interval = setInterval(() => {
+        if (chatbotRef.current) {
+          const chaptersList = fullData.chapters
+            ?.map((ch, i) => `Chapter ${i + 1}: ${ch.title}`)
+            .join('\n');
+
+          const context = `Course ID: ${courseId}
+Chapter: ${chapterTitle}
+Available Chapters:\n${chaptersList}`;
+
+          chatbotRef.current.addCourseContext(context);
+          clearInterval(interval);
+        }
+      }, 200);
+
+      return () => clearInterval(interval);
+    }
+  }, [fullData]);
+
   const nextCard = () => {
     if (currentCardIndex < chapterContent.length - 1) {
       setCurrentCardIndex(currentCardIndex + 1);
     }
   };
 
-  // Move to the previous card or go back if at the first card
   const previousCard = () => {
     if (currentCardIndex === 0) {
       navigation.goBack();
@@ -38,7 +59,6 @@ const CardsPage = ({ route }) => {
     }
   };
 
-  // Access the quiz for the current chapter using the chapterIndex
   const currentQuiz = fullData.chapters[chapterIndex]?.quiz;
 
   return (
@@ -48,7 +68,6 @@ const CardsPage = ({ route }) => {
         style={styles.cardsContainer} 
         contentContainerStyle={styles.cardsContentContainer}
       >
-        {/* Display only the current card */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>
             {chapterContent[currentCardIndex].title}
@@ -59,7 +78,6 @@ const CardsPage = ({ route }) => {
         </View>
       </ScrollView>
 
-      {/* Navigation Buttons */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={previousCard}>
           <Text style={styles.buttonText}>Previous</Text>
@@ -68,12 +86,11 @@ const CardsPage = ({ route }) => {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            // If it's the last card, navigate to QuizPage with the quiz details
             if (currentCardIndex === chapterContent.length - 1) {
               navigation.navigate('QuizPage', {
                 questions: currentQuiz?.questions,
-                courseId: courseId,  // Pass the course ID correctly
-                quizId: quizId,      // Pass the derived quiz ID
+                courseId: courseId,
+                quizId: quizId,
               });
             } else {
               nextCard();
@@ -85,6 +102,14 @@ const CardsPage = ({ route }) => {
           </Text>
         </TouchableOpacity>
       </View>
+
+      {/* Chatbot */}
+      <ChatbotFAB onPress={() => setChatVisible(true)} />
+      <ChatbotOverlay
+        ref={chatbotRef}
+        visible={chatVisible}
+        onClose={() => setChatVisible(false)}
+      />
     </View>
   );
 };
@@ -108,7 +133,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     marginTop: 30,
   },
-  // Apply layout properties here via contentContainerStyle
   cardsContentContainer: {
     flexGrow: 1,
   },

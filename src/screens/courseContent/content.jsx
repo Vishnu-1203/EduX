@@ -45,16 +45,26 @@ const CourseContent = ({ route, navigation }) => {
 
   // Add useEffect to add course context to chatbot when courseData is loaded
   useEffect(() => {
-    if (courseData && chatbotRef.current) {
-      // Prepare course context string for the chatbot
-      const courseContext = `Course: ${courseData.title || 'Unknown'}\n` +
-                           `Description: ${courseData.description || 'No description available'}\n` +
-                           `Chapters: ${courseData.contents?.chapters?.length || 0}`;
-      
-      // Add context to chatbot
-      chatbotRef.current.addCourseContext(courseContext);
+    if (courseData) {
+      const interval = setInterval(() => {
+        if (chatbotRef.current) {
+          const chaptersList = courseData.contents?.chapters
+            ?.map((ch, i) => `Chapter ${i + 1}: ${ch.title}`)
+            .join('\n');
+  
+          const courseContext = `Course Title: ${courseData.title || 'Unknown'}
+  Description: ${courseData.description || 'No description'}
+  Chapters:\n${chaptersList || 'No chapters available'}`;
+  
+          chatbotRef.current.addCourseContext(courseContext);
+          clearInterval(interval); // Cleanup after sending
+        }
+      }, 200); // Check every 200ms
+  
+      return () => clearInterval(interval); // Clean up on unmount
     }
-  }, [courseData, chatbotRef.current]);
+  }, [courseData]);
+  
 
   if (loading) {
     return (
