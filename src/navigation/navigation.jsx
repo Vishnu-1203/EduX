@@ -11,7 +11,10 @@ import Course1 from "../screens/courseContent/course1";
 import CourseContent from "../screens/courseContent/content";
 import CardsPage from "../screens/courseContent/cardsPage";
 import QuizPage from "../screens/courseContent/quiz";
-import RewardScreen from "../screens/dashboardComponents/RewardScreen"; // Adjust the path if necessary
+import RewardScreen from "../screens/dashboardComponents/RewardScreen";
+
+// 🆕 Import YourCourses screen
+import YourCourses from "../screens/dashboardComponents/yourCourses"; // Adjust if you place it somewhere else
 
 const Stack = createStackNavigator();
 
@@ -31,6 +34,8 @@ export default function Navigation() {
         <Stack.Screen name="cardsPage" component={CardsPage} />
         <Stack.Screen name="QuizPage" component={QuizPage} />
         <Stack.Screen name="RewardScreen" component={RewardScreen} />
+        {/* 🆕 Add YourCourses */}
+        <Stack.Screen name="YourCourses" component={YourCourses} />
       </Stack.Navigator>
     </NavigationContainer>
   );
