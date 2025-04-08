@@ -1,4 +1,6 @@
-import React, {useEffect, useState} from 'react';
+// E:\Blockchain project\EduX\src\screens\Profile.jsx
+
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,15 +10,17 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Profile() {
   const [user, setUser] = useState(null);
+  const navigation = useNavigation();
 
   useEffect(() => {
     const currentUser = auth().currentUser;
     if (currentUser) {
-      const {displayName, photoURL, email} = currentUser;
-      setUser({name: displayName, image: photoURL, email});
+      const { displayName, photoURL, email } = currentUser;
+      setUser({ name: displayName, image: photoURL, email });
     }
   }, []);
 
@@ -24,17 +28,23 @@ export default function Profile() {
     <View style={styles.container}>
       {user ? (
         <View style={styles.profileCard}>
-          <Image source={{uri: user.image}} style={styles.image} />
+          <Image source={{ uri: user.image }} style={styles.image} />
           <Text style={styles.infoText}>Name: {user.name}</Text>
           <Text style={styles.infoText}>Email: {user.email}</Text>
-          <TouchableOpacity style={styles.courses}>
+          <TouchableOpacity
+            style={styles.courses}
+            onPress={() => navigation.navigate("YourCourses")}
+          >
             <Image
               source={require('../../../src/assets/dashboard/yourcourses.png')}
               style={styles.yourcourses}
               resizeMode="contain"
             />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.courses}>
+          <TouchableOpacity
+            style={styles.courses}
+            onPress={() => navigation.navigate("RewardScreen")}
+          >
             <Image
               source={require('../../../src/assets/dashboard/rewards.png')}
               style={styles.rewards}
@@ -64,7 +74,7 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     alignItems: 'center',
     shadowColor: '#7979B2',
-    shadowOffset: {width: 0, height: 10},
+    shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 10,
     shadowRadius: 10,
     elevation: 20,
